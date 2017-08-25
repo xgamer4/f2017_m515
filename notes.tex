@@ -1,0 +1,2332 @@
+\documentclass[11pt,oneside]{amsbook}
+
+\title{Real and linear analysis}
+\author{Course notes based on material from\\``Measure theory'' by Terence Tao, and\\``Real analysis'' by Bruckner, Bruckner, and Thompson}
+
+\usepackage[vscale=.8,vmarginratio=4:3]{geometry}
+\usepackage{mathpazo,amssymb}
+\usepackage{setspace}\onehalfspacing\raggedbottom
+\renewcommand{\labelitemi}{$\circ$}
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\renewcommand{\chaptername}{Part}
+\renewcommand{\thechapter}{\Roman{chapter}}
+\usepackage{remreset}
+\makeatletter\@removefromreset{section}{chapter}\makeatother
+\usepackage{etoolbox}
+\makeatletter
+\pretocmd{\@seccntformat}{\S}{}{}      % mark sec numbers
+\patchcmd{\tocsection}{#2.}{\S#2.}{}{} % mark sec numbers in toc
+\apptocmd{\tocsection}{\dotfill}{}{}   % dots in toc
+\patchcmd{\@maketitle}{\newpage}{}{}{} % no blank page after title
+\makeatother
+\usepackage[linktoc=all]{hyperref}
+\usepackage{tikz}
+
+\newcommand{\set}[1]{\left\{\,#1\,\right\}}
+\renewcommand{\setminus}{\smallsetminus}
+\newcommand{\NN}{{\mathbb N}}
+\newcommand{\ZZ}{{\mathbb Z}}
+\newcommand{\QQ}{{\mathbb Q}}
+\newcommand{\RR}{{\mathbb R}}
+\newcommand{\CC}{{\mathbb C}}
+\DeclareMathOperator{\len}{len}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\rng}{rng}
+\DeclareMathOperator{\id}{id}
+\newcommand{\sint}{\text{s}\kern-3pt\int}
+\newcommand{\lint}{\underline\int}
+\newcommand{\ovint}{\overline\int}
+
+\theoremstyle{definition}
+\newtheorem{exerc}{Exercise}[section]
+\swapnumbers
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem{example}[thm]{Example}
+\newtheorem*{notes}{Notes and further reading}
+\newtheorem*{reading}{Reading}
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\renewcommand{\theequation}{\arabic{section}.e\arabic{equation}}
+\renewcommand{\thefigure}{\arabic{section}.f\arabic{figure}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Measure theory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The measure problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S1.1 introduction, and \S1.2.3.
+\end{reading}
+
+Before discussing the measure problem, let's talk intuitively about what we mean by ``measure.'' In this area of mathematics, measure is a number assigned to a set which represents its size. Of course the term ``size'' also has many meanings. Our concept of measure can accommodate many different types of sizes, such as: length, area, volume, mass, and even probability. On the other hand, some other types of size are not usually associated with the mathematical concept of measure, such as: cardinality, diameter, and density.
+
+The mathematical concept of a measure is thus beginning to seem geometric. But considering our models of sets and spaces, in which coordinate axes are indexed by the infinitesimal points of the real number line, measure really turns out to be an analytic concept. (In particular, this means lots of $\epsilon$'s will show up in our studies!)
+
+For a simple set, it may be easy to decide what its measure should be. For example, if we use the term measure to mean length, then the measure of the interval $[4,7]$ should be $3$. But for a more complicated set, the decision may not be so easy. If you have seen the construction of the Cantor set, think about how you would measure the length of that!
+
+Thus we arrive at the ``measure problem,'' which asks whether it is even possible to find a function which adequately measures subsets of the real line $\RR$. Of course it is necessary to say what is considered adequate. The classical version of the measure problem proposed the three properties below. Formally, the measure problem asks: Does there exist a measure function $m$ which assigns to each subset $A\subset\RR$ a value $m(A)\in[0,\infty]$ satisfying:
+\begin{enumerate}
+\item (normality) $m(I)=$ the length of $I$ for every interval $I$;
+\item (translation-invariance) $m(x+A)=m(A)$ for every $A$; and
+\item (countable additivity) $m(\bigcup A_n)=\sum m(A_n)$ for every seqence of pairwise disjoint sets $A_n$.
+\end{enumerate}
+
+Perhaps surprisingly, no such measure function $m$ exists! While properties~(a)--(c) seem very natural, the three items unfortunately turn out to be mutually inconsistent.
+
+\begin{thm}[Vitali]
+  There exists a set $A\subset\RR$ such that no measure can be assigned to $A$ consistently with (a)--(c).
+\end{thm}
+
+\begin{proof}
+  Rather than work on $\RR$, we will work on the half-open unit interval $[0,1)$ with the addition operation taken modulo $1$. This is ok, since if there is a measure $m$ on all subsets of $\RR$, then by properties~(b) and~(c), $m$ restricts to a measure on subsets of $[0,1)$ which satisfies property~(b) with respect to addition modulo $1$.
+
+  Now let $\QQ_1$ denote the rationals of $[0,1)$, that is, $\QQ_1=\QQ\cap[0,1)$, and consider the collection of additive cosets of $\QQ_1$ inside $[0,1)$. The cosets are of the form $a+\QQ_1$ where again addition is interpreted modulo $1$. We now let $A\subset[0,1)$ denote a system of coset representatives for this collection.
+
+  Now every number in $[0,1)$ can be written uniquely as $a+q$ for $a\in A$ and $q\in\QQ_1$. This means that the collection of translates of $A$ by elements $q\in\QQ_1$ covers all of $[0,1)$. In particular, by (a) the measure of $\bigcup_{q\in\QQ_1}(A+q)$ is exactly $1$.
+
+  On the other hand, by (b) and (c) we have that
+  \[m\left(\bigcup\nolimits_{q\in\QQ_1}(A+q)\right)
+  =\sum\nolimits_{q\in\QQ_1}m(A+q)=\sum\nolimits_{q\in\QQ_1}m(A)
+  \]
+  By the previous paragraph, the left-hand side of the above equation is $1$. On the other hand the right-hand side is an infinite sum of some nonnegative constant, and hence must be either $0$ or $\infty$. This is a contradiction!
+\end{proof}
+
+We remark that it is possible to modify the argument to apply directly to a measure on $\RR$ rather than going via the unit interval with addition modulo $1$. See Tao for this version.
+
+The lesson is that we must weaken our demands on a measure $m$. Dropping condition (a) can lead to trivial measures. Dropping condition (b) takes away the geometric aspects of the measure, and leads to interesting set-theoretic questions and constructions. Weakening condition (c) to finite additivity leads to interesting solutions, but only in dimensions $\leq2$. (In dimensions $\geq3$ the Banach--Tarski paradox again gives a contradiction.)
+
+Yet the simplest path forward (and the one that we take) is to drop the tacit condition that \emph{every} set be measurable. The set $A$ constructed in Vitali's proof is very artificial and isn't likely to occur in any of the most common analytical applications (see the notes below). We want to be excused from the burden of deciding the measure of the set $A$. This means we need to figure out what sets we will measure, and what sets we will not measure. In the end, our measure function $m$ will have a domain which is a proper subset of $\mathcal P(\RR)$, but which still contains a rich collection of sets. And the measure will satisy properties (a)--(c) as long as they are applied to the sets in the domain of $m$.
+
+Of course we are also interested in the measure problem for subsets $\RR^n$. It can be formulated in just the same way, with condition (a) replaced by the condition that the measure of a box is equal to its volume. And a Vitali-type result can also easily be established for this version of the measure problem.
+
+In the next section, we will begin this process by taking a step backwards and build measures with much smaller domains, and satisfying just fragments of (a)--(c).
+
+\begin{notes}
+  The proof of Vitali's theorem requires the Axiom of Choice. Specifically, it is needed to find a system of coset representatives for an uncountable collection. Solovay showed that the use of AC is essential, and that it is consistent with $\neg$AC that there is a measure function $m$ on all subsets of $\RR$.
+\end{notes}
+
+\begin{exerc}
+  Show that the properties (a)--(c) imply finite addivitity: If $A$ and $B$ are disjoint then $m(A\cup B)=m(A)+m(B)$.
+\end{exerc}
+
+\begin{exerc}
+  Show that the properties (a)--(c) imply the inclusion--exclusion principle: For any sets $A,B$ we have $m(A\cup B)+m(A\cap B)=m(A)+m(B)$.
+\end{exerc}
+
+\begin{exerc}
+  Complete the details of the proof that if there is a measure on $\RR$ satisfying properties (a)--(c), then there is a measure on $[0,1)$ (with additional modulo $1$) satisfying properties (a)--(c).
+\end{exerc}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Elementary measure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S1.1.1
+\end{reading}
+
+In the introduction we saw that we cannot hope to define a measure which will work adequately on all subsets of $\RR^n$. In this section we start over and define a measure which is capable of measuring only the simplest sorts of subsets of $\RR^n$. In doing so we will see some of the difficulties which one encounters in defining even very simple measures, and we will also see some of these difficulties resolved. Moreover we will have explicit use for the elementary measure defined in this section, so doing so is not a digression at all.
+
+Recall that a \emph{bounded interval} is any subset of $\RR$ of the form $(a,b)$, $[a,b)$, $(a,b]$, or $[a,b]$. We shall use the term \emph{box} for any subset of $\RR^n$ which is a Cartesian product of bounded intervals.
+
+\begin{defn}
+  A subset $E\subset\RR^n$ is \emph{elementary} if it can be expressed as a union of finitely many boxes.
+\end{defn}
+
+For any elementary set $E$, we wish to define its \emph{elementary measure}, or simply \emph{measure}, $m(E)$. The measure of any interval will be defined to be its length, and the measure of any box will be defined to be its volume. Thus if $I=(a,b)$ or $[a,b)$ or $(a,b]$ or $[a,b]$, then we let $m(I)=\len(I)=b-a$ (in all four cases). And if $B=\prod I_n$ is a box, then we define $m(B)=\vol(B)=\prod\len(I_n)$. So far, so good.
+
+We now wish to define the measure of an elementary set to be the sum of the finitely many boxes it is composed of. However there are two issues with this statement: first the constituent boxes need not be disjoint, and second there is in general more than one way to express an elementary set as a union of boxes. The following two lemmas address these two issues.
+
+\begin{lem}
+  Any elementary set $E$ can be expressed as a finite union of disjoint boxes.
+\end{lem}
+
+\begin{proof}
+  First assume that $E\subset\RR^1$ and that $E=\bigcup I_i$. Then by considering all endpoints of the $I_i$ in increasing order $a_1,\ldots,a_m$ it is easy to write $E$ as the union of sets of the form $(a_i,a_{i+1})$ together with sets of the form $[a_i,a_i]$ (single points). Such a union is clearly disjoint.
+
+  In general if $E\subset\RR^n$ and $E=\bigcup B_i$ then for each dimension $d\leq n$ consider in turn the $d$th sides of the boxes $I_i^d$. Again consider the endpoints of these intervals in increasing order $a_i^d,\ldots,a_{m_d}^d$. Then we can write $E$ as a union of small boxes which are products of sets of the form $(a_i^d,a_{i+1}^d)$ or of the form $[a_i^d,a_{i+1}^d]$. Such boxes are again disjoint.
+\end{proof}
+
+Figure~\ref{fig:elementary-disjoint} shows an example of the method of the proof above.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[xscale=1.3]
+    \draw[fill=gray!50] (0,0) rectangle (2,2);
+    \draw[fill=gray!50] (1,1) rectangle (3,3);
+    \draw (0,0) rectangle (2,2);
+  \end{tikzpicture}
+  \qquad
+  \begin{tikzpicture}[xscale=1.3]
+    \draw[dotted,fill=gray!50] (.1,.1) rectangle (.9,.9);
+    \draw[dotted,fill=gray!50] (1.1,.1) rectangle (1.9,.9);
+    \draw[dotted,fill=gray!50] (.1,1.1) rectangle (.9,1.9);
+    \draw[dotted,fill=gray!50] (1.1,1.1) rectangle (1.9,1.9);
+    \draw[dotted,fill=gray!50] (2.1,1.1) rectangle (2.9,1.9);
+    \draw[dotted,fill=gray!50] (2.1,2.1) rectangle (2.9,2.9);
+    \draw[dotted,fill=gray!50] (1.1,2.1) rectangle (1.9,2.9);
+    \draw (.1,0)--(.9,0);
+    \draw (1.1,0)--(1.9,0);
+    \draw (.1,1)--(.9,1);
+    \draw (1.1,1)--(1.9,1);
+    \draw (2.1,1)--(2.9,1);
+    \draw (.1,2)--(.9,2);
+    \draw (1.1,2)--(1.9,2);
+    \draw (2.1,2)--(2.9,2);
+    \draw (1.1,3)--(1.9,3);
+    \draw (2.1,3)--(2.9,3);
+    \draw (0,.1)--(0,.9);
+    \draw (0,1.1)--(0,1.9);
+    \draw (1,.1)--(1,.9);
+    \draw (1,1.1)--(1,1.9);
+    \draw (1,2.1)--(1,2.9);
+    \draw (2,.1)--(2,.9);
+    \draw (2,1.1)--(2,1.9);
+    \draw (2,2.1)--(2,2.9);
+    \draw (3,1.1)--(3,1.9);
+    \draw (3,2.1)--(3,2.9);
+    \node[circle,fill,inner sep=1pt] at (0,0) {};
+    \node[circle,fill,inner sep=1pt] at (1,0) {};
+    \node[circle,fill,inner sep=1pt] at (2,0) {};
+    \node[circle,fill,inner sep=1pt] at (0,1) {};
+    \node[circle,fill,inner sep=1pt] at (1,1) {};
+    \node[circle,fill,inner sep=1pt] at (2,1) {};
+    \node[circle,fill,inner sep=1pt] at (3,1) {};
+    \node[circle,fill,inner sep=1pt] at (0,2) {};
+    \node[circle,fill,inner sep=1pt] at (1,2) {};
+    \node[circle,fill,inner sep=1pt] at (2,2) {};
+    \node[circle,fill,inner sep=1pt] at (3,2) {};
+    \node[circle,fill,inner sep=1pt] at (1,3) {};
+    \node[circle,fill,inner sep=1pt] at (2,3) {};
+    \node[circle,fill,inner sep=1pt] at (3,3) {};
+  \end{tikzpicture}
+  \caption{On the left: An elementary set which is a union of two closed boxes. On the right: the elementary set shattered expressed as a disjoint union of seven open boxes, 20 open segments, and 14 points.}
+  \label{fig:elementary-disjoint}
+\end{figure}
+
+\begin{lem}
+  Suppose the elementary set $E$ can be expressed in two ways a a finite union of disjoint boxes: $E=\bigsqcup B_i=\bigsqcup C_j$. Then $\sum\vol(B_i)=\sum\vol(C_j)$.
+\end{lem}
+
+\begin{proof}
+  We first note that $I$ is an interval with endpoints $a,b$, and if $a=a_1,a_2,\ldots,a_m=b$ is an increasing sequence then $\len(I)=\sum\len(a_i,a_{i+1})$. This is simply because the latter summation telescopes.
+  
+  Next if $B$ is a box whose $d$th side has endpoints $a^d,b^d$, and if $a^d=a_1^d,a_2^d,\ldots,a_{m_d}^d=b^d$ then $\vol(B)=$ the sum of all small boxes of the form $\prod(a_{i_d}^d,a_{i_d+1}^d)$. We will call the set of such small boxes a perfect grid. Intuitively, if you break a box into a perfect grid of sub-boxes, then the volume of the box is the sum of the volumes of the sub-boxes.
+
+  Now if $B$ is a box and one expresses it as a disjoint union of sub-boxes $B=\bigsqcup B_i$, then $\vol(B)=\sum\vol(B_i)$. This is because it is possible to find a \emph{refinement} of the given disjoint union which is a perfect grid as in the previous paragraph. That is, it is possible to write $B=\bigsqcup D_i$ where $\{D_i\}$ is a perfect grid, and each $B_i$ is the union of a perfect grid of sets taken from the collection $\{D_i\}$. Then one can simply apply the argument of the previous paragraph to $B$ and to each $B_i$.
+
+  Finally given $E$, $B_i$, and $C_j$ as in the problem statement, one can find a third expression $E=\bigsqcup D_k$ where $\{D_k\}$ is a refinement of \emph{both} $\{B_i\}$ and of $\{C_j\}$. That is, each $B_i$ and each $C_j$ is a disjoint union of elements of $\{E_k\}$. It follows from the previous paragraph that $\sum\vol(B_i)=\sum\vol(D_k)$ and analogously that $\sum\vol(C_j)=\sum\vol(D_k)$. This completes the proof.
+\end{proof}
+
+The two lemmas together imply that it is well-defined to characterize the elementary measure with the expression $m(\bigsqcup B_i)=\sum m(B_i)$.
+
+\begin{prop}
+  The elementary measure function $m$ satisfies
+  \begin{enumerate}
+  \item (normality) $m(B)=\vol(B)$ for any box $B$;
+  \item (translation-invariance) $m(x+E)=m(E)$ for any elementary set $E$; and
+  \item (finite additivity) $m(E\cup F)=m(E)+m(F)$ for any disjoint elementary sets $E,F$.
+  \end{enumerate}
+\end{prop}
+
+Normality is clear from the defenition of $m$. The translation-invarinace is easy because it is true of length and volume, and moreover is preserved even when we take disjoint unions. The finite additivity property is again clear from the definition of $m$. We remark that $m$ satisfies countable additivity as well (restricted to elementary sets of course), but that is much more difficult and will be addressed in the future.
+
+The above three core properties imply further useful properties as well.
+
+\begin{prop}
+  \label{prop:elementary-further}
+  The elementary measure function $m$ satisfies
+  \begin{itemize}
+  \item (monotonicity) $m(E)\leq m(F)$ for elementary sets $E\subset F$; and
+  \item (finite subadditivity) $m(E\cup F)\leq m(E)+m(F)$ for elementary $E,F$.
+  \end{itemize}
+\end{prop}
+
+These results give an essentially complete solution to the measure problem for elementary sets. It wasn't too difficult to achieve, but perhaps not as easy as one would have thought! Even so, what about measuring other simple sets such as circles, triangles, blobs, Cantor sets, and so on? In the next section we will continue on the road to doing this.
+
+\begin{exerc}[Tao Ex 1.1.1]
+  Show that the class of elementary sets is closed under the operations: union, intersection, set difference, symmetric difference, and translation.
+\end{exerc}
+
+\begin{exerc}
+  Prove Proposition~\ref{prop:elementary-further}.
+\end{exerc}
+
+\begin{exerc}[Tao Ex 1.1.4]
+  Show that if $A$ is an elementary subset of $\RR^m$ and $B$ is an elementary subset of $\RR^n$ then $A\times B$ is an elementary subset of $\RR^{m+n}$. Furthermore show that $m_e(A\times B)=m_e(A)m_e(B)$.
+\end{exerc}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Jordan measure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S1.1.2.
+\end{reading}
+
+In the previous section we showed that the intuitive definition of area is sensible for elementary sets, but then remarked that simple shapes like polygons and circles are not elementary. It is easy to imagine extending the elementary measure to triangles by cutting, and to polygons by applying rotations, stretches, and skews. However no such operation (called \emph{affine} transformations) can help measure a circle.
+
+Instead we will measure the circle the way it has always been done, by using \emph{approximation}. It is not hard to visualize a circle being approximated by elementary sets, using smaller and smaller boxes near the boundary. The approximation technique will help us measure most traditional geometric figures, and even many blobby thingies.
+
+\begin{defn}
+  Let $E$ be a bounded subset of $\RR^n$. First define the \emph{inner} and \emph{outer Jordan} measures (sometimes called lower and upper):
+  \begin{align*}
+    m_{*j}&=\inf\set{m(A):A\subset E,\, A\text{ elementary}}\\
+    m^{*j}&=\inf\set{m(B):E\subset B,\, B\text{ elementary}}
+  \end{align*}
+  Then if $m_{*j}(E)=m^{*j}(E)$ we say that $E$ is \emph{Jordan measurable}, call the common quantity the \emph{Jordan measure} of $E$, and denote it by $m(E)$.
+\end{defn}
+
+It is immediate from the definition Jordan measure extends elementary measure in the sense that they agree on the elementary sets. This means we are justified in using ``$m$'' both for the elementary and Jordan measure. Moreover, we will show that the Jordan measure inherits many of the properties of the elementary measure: normality, translation-invariance, finite additivity, monotonicity, and finite subadditivity.
+
+The normality and translation-invariance properties hold simply because they hold for elementary measure. The finite properties will take a little more work. For instance, in order to even state the finite additivity property, we first need to establish Boolean closure: the union of measurable sets is measurable.
+
+Before we begin these results, it will be useful to establish the following characterization of Jordan measurability. As we will be working with approximations, the following results also illustrate our first use of $\epsilon$-style analytical arguments.
+
+\begin{lem}
+  \label{lem:jordan-equiv}
+  The set $E$ is Jordan measurable if and only if either of the following holds:
+  \begin{itemize}
+  \item For all $\epsilon>0$ there are elementary sets $A,B$ such that $A\subset E\subset B$ such that $m(B\setminus A)<\epsilon$.
+    % Note: for homework students should show the difference of elementary sets is elementary
+  \item For all $\epsilon>0$ there is an elementary set $A$ such that $m(E\triangle A)=0$.
+  \end{itemize}
+\end{lem}
+
+\begin{proof}
+  We establish only the equivalence of Jordan measurability with the first item. To begin, assume that $E$ is Jordan measurable and let $\epsilon>0$ be given. By the $m_{*j}$ definition of Jordan measure, we can find an elementary set $A\subset E$ such that $m(E)-m(A)<\epsilon/2$. By the $m^{*j}$ definition of jordan measure we can find an elementary set $B$ such that $E\subset B$ and $m(B)-m(E)<\epsilon/2$. It follows that 
+\[m(B\setminus A)=m(B)-m(A)=(m(B)-m(E))-(m(E)-m(A))<\epsilon
+\]
+as desired.
+
+  For the converse, assume that the first item is true, and let $\epsilon>0$ be arbitrary. Then we can find elementary sets $A,B$ such that $A\subset E\subset B$ and $m(B)-m(A)<\epsilon$. From the definitions of inner and outer Jordan measure, we have that $m(A)\leq m_{*j}(E)\leq m^{*j}(E)\leq m(B)$. It follows that $m^{*j}(E)-m_{*j}(E)<\epsilon$. Since $\epsilon$ was arbitrary, we may conclude that $m_{*j}(E)=m^{*j}(E)$ and therefore that $E$ is Jordan measurable.
+\end{proof}
+
+Note that in the proof, one has to be careful when making a claim such as $m(B\setminus A)=m(B)-m(A)$. It is true in these cases because: the elementary sets are closed under set differences, and so all three sets are elementary, together with the finite additivity property for elementary measure.
+
+\begin{prop}
+  If $E,F$ are Jordan measurable, then so are $E\cup F$, $E\cap F$, and $E\setminus F$.
+\end{prop}
+
+\begin{proof}
+  We prove only the case of $E\cup F$. Suppose that $E,F$ are Jordan measurable. By the previous lemma, we can find elementary sets $A,B,A',B'$ such that $A\subset E\subset B$, and $A'\subset F\subset B'$, and $m(B\setminus A),m(B'\setminus A')<\epsilon/2$. Then we have $A\cup A'\subset E\cup F\subset F\cup F'$ and using some algebra together with the finite subadditivity of elementary measure, $m(B\cup B'\setminus(A\cup A'))\leq m(B\setminus A)+m(B'\setminus A')<\epsilon$. Again by the previous lemma, this shows that $E\cup F$ is Jordan measurable.
+\end{proof}
+
+We are now ready to establish the remaining stated properties of Jordan measure. The following result states finite additivity, and the first paragraph of its proof gives finite subadditivity. The monotonicity property follows immediately from finite additivity.
+
+\begin{thm}
+  The Jordan measure satisfies finite additivity, that is, if $E,F$ are Jordan measurable and disjoint, then $m(E\cup F)=m(E)+m(F)$.
+\end{thm}
+
+\begin{proof}
+  We first show subbaditivity, that is, that $m(E\cup F)\leq m(E)+m(F)$. Let $\epsilon>0$ be given. Using the fact that $m=m^{*j}$ we can find elementary sets $B,B'$ such that $E\subset B$, $F\subset B'$, $m(B)-m(E)<\epsilon/2$, and $m(B')-m(F')<\epsilon/2$. Using the monotonicity and subadditivity properties of the elementary measure, together with the definition of Jordan measurability, we now have:
+  \begin{align*}
+    m(E\cup F)&=m^{*j}(E\cup F)\\
+              &\leq m(B\cup B')\\
+              &\leq m(B)+m(B')\\
+              &< m(E)+m(F)+\epsilon
+  \end{align*}
+  Since $\epsilon$ was arbitrary, we achieve the desired inequality.
+% question: do we need to use the outer version here?
+  
+  Now additionally assume that $E,F$ are disjoint, and again let $\epsilon>0$. This time using $m=m_{*j}$, we can find elementary sets $A,A'$ such that $A\subset E$, $A'\subset E'$, $m(E)-m(A)<\epsilon/2$, and $m(F)-m(A')<\epsilon/2$. Using the fact that $A,A'$ are disjoint, the finite additivity of elementary measure, and the definition of Jordan measurability, we now have:
+  \begin{align*}
+    m(E\cup F)&=m_{*j}(E\cap F)\\
+              &\geq m(A\cup A')\\
+              &=m(A)+m(A')\\
+              &>m(E)+m(F)-\epsilon
+  \end{align*}
+  Again letting $\epsilon$ tend to $0$, we achieve that $m(E\cup F)\geq m(E)+m(F)$.
+\end{proof}
+
+While you probably have a clear idea of what the elementary sets look like, it is now time to give some examples and non-examples of Jordan measurable sets. Some simple but useful new examples are the axis-parallel triangles. Suppose $T$ is an axis-parallel triange with leg lenghs $a$ and $b$. To prove that $T$ is Jordan measurable, note that two copies of $T$ essentially make up a box with area $ab$. Using the finite additivity, this implies that the measure of $T$ is the expected $ab/2$.
+
+To make this argument we need to know that Jordan measure is invariant under $180^\circ$ rotation, which is clear because it is true for boxes. But also since the two copies of $T$ overlap in a line segment, we also need to know that the Jordan measure of a line segment is $0$. This fact follows from the more general result below.
+
+\begin{lem}
+  \label{lem:jordan-graph}
+  Let $f$ be a continuous function defined on a closed, bounded interval. Then the graph of $f$, considered as a subset of $\RR^2$, has Jordan measure $0$.
+\end{lem}
+
+\begin{proof}
+  Let $I$ denote the domain of $f$. Recall that since $I$ is closed and bounded, it is \emph{compact}. Recall also that a continuous function with a compact domain is \emph{uniformly continuous}: for any $\epsilon>0$ there exists a $\delta>0$ such that for any interval $J$, $\len(J)<\delta$ implies $\len(f(J))<\epsilon$.
+
+  So let $\epsilon>0$ be given, and choose $\delta>0$ as above. Shrinking $\delta$ if necessary, we can suppose that $\len(I)/\delta$ is an integer $k$. Partitioning $I$ into intervals $J_1,\ldots,J_k$ each of lengh $\delta$, we have that the graph of $f$ is contained in the set
+  \[E=\bigcup_{i\leq k} J_i\times[\min f(J_i),\max f(J_i)]
+  \]
+  Note that the min and max values in the definition of $E$ exist by the extreme value theorem. Now $E$ is a union of $k$ many rectangles each of size at most $\delta\epsilon$. Thus $E$ is elementary and its measure is at most $k\delta\epsilon$. This latter value is $\len(I)\epsilon$, so the upper measure $m^{*j}$ of the graph of $f$ is at most $\len(I)\epsilon$. Taking $\epsilon\to0$, we conclude that $f$ is Jordan measurable with measure $0$.
+\end{proof}
+
+It is now not difficult to conclude that all polygons are Jordan measurable and have the expeted measure. This is because all polygons can be decomposed into a union of axis parallel triangles (possibly overlapping on their measure zero edges).
+
+A simple example of a set which is not Jordan measurable is the set $\QQ_1=\QQ\cap[0,1]$ of rational numbers in the unit interval. Indeed the only elementary sets $A\subset\QQ_1$ are the finite sets, and so $m_{*j}(\QQ_1)=0$. And the only elementary sets $B$ such that $\QQ_1\subset B$ are of the form $[0,1]\setminus F$ where $F$ is finite, and so $m^{*j}(\QQ_1)=1$.
+
+We can conclude from these examples that Jordan measure works very well for classical geometric objects, but not very well even for simple analytic objects such as countable dense sets, the Cantor set, and so forth. To handle such sets, we will soon work to describe the Lebesgue measure, which  satisfies \emph{countable} additivity. Before going to such generality, however, we explore the connection between Jordan measure and the Riemann integral.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Riemann integration}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S1.1.3.
+\end{reading}
+
+If the picture of Lemma~\ref{lem:jordan-graph} reminded you of Riemann sums, it should. Measure theory is closely connected to integration theory, as both are concerned with calculating areas of some regions. Moreover the Jordan measure corresponds neatly with the Riemann integral. The following presentation of the Riemann integral is actually attributed to Darboux.
+
+Just as we defined the elementary measure before we defined the Jordan measure, we will now define the ``piecewise constant'' integral before we define the Riemann integral.
+
+\begin{defn}
+  Let $f$ be a real-valued function defined on $[a,b]$. Then $f$ is said to be \emph{piecewise constant} if there exists a partition $\mathcal P$ of $[a,b]$ into finitely many subintervals $I_j$ such that $f$ takes a constant value $c_j$ on each interval $I_j$.
+\end{defn}
+
+In other words, $f$ is piecewise constant if $f$ is of the form $\sum_1^k c_j\chi_{I_j}$, where $I_j$ are intervals. Here $\chi_{I_j}$ denotes the \emph{characteristic function} of $I_j$, that is, $\chi_{I_j}(x)=1$ if $x\in I_j$ and $\chi_{I_j}(x)=0$ otherwise.
+
+\begin{defn}
+  If $f=\sum_1^kc_j\chi_{I_j}$ then the \emph{pc integral} of $f$ is defined to be $\sum_1^kc_j\len I_j$.
+\end{defn}
+
+As was the case with the elementary measure, one must check that the value of the pc integral is well-defined. That is, if $f$ is expressed in two different ways as a pc function, say $\sum c_j\chi_{I_j}=\sum d_k\chi_{J_k}$, then one must check that the two values $\sum c_j\len(I_j)$ and $\sum d_k\len(J_k)$ agree.
+
+\begin{defn}
+  Let $f$ be a bounded function on $[a,b]$. First define the lower and upper Riemann forms:
+  \begin{align*}
+    \lint f&=\sup\set{\left.\text{pc}\!\!\int\!\! f\;\right|\;g\leq f\text{, $g$ pc}}\\
+    \ovint f&=\inf\set{\left.\text{pc}\!\!\int\!\! h\;\right|\;f\leq h\text{, $h$ pc}}
+  \end{align*}
+  Then if $\lint f=\ovint f$ we say that $f$ is \emph{Riemann integrable}, and denote the common value simply by $\int f$.
+\end{defn}
+
+\begin{prop}
+  The Riemann integral satisfies the three properties:
+  \begin{itemize}
+  \item (normality) If $E$ is a Jordan measurable subset of $[a,b]$, then $\chi_E$ is Riemann integrable over $[a,b]$ and $\int\chi_E=m(E)$.
+  \item (linearity) If $f,g$ are Riemann integrable then so are $cf$ and $f+g$ and we have $\int cf=c\int f$, and $\int(f+g)=\int f+\int g$.
+  \item (monotonicity) If $f,g$ are Riemann integrable and $f\leq g$ then $\int f\leq \int g$.
+  \end{itemize}
+\end{prop}
+
+\begin{proof}
+  We establish only the normality property. By Lemma~\ref{lem:jordan-equiv}, for any $\epsilon$ we can find disjoint intervals $I_j$ and disjoint intervals $J_k$ such that $\bigcup I_j\subset E\subset\bigcup J_k$ and $m(\bigcup J_k\setminus\bigcup I_j)<\epsilon$. It is easy to see from the definition of the pc integral that $\text{pc}\int\chi_{\bigcup I_j}=m(\bigcup I_i)$, and similarly $\text{pc}\int\chi_{\bigcup J_k}=m(\bigcup J_k)$. We now have
+  \[m(\bigcup I_i)\leq\lint\chi_E\leq\ovint\chi_E
+  \leq m(\bigcup J_k)
+  \]
+  Since the left and right-hand sides differ by $<\epsilon$, it follows that the lower and upper integrals differ by $<\epsilon$ as well. Since $\epsilon$ was arbitrary, it follows that $\chi_E$ is integrable. And since we also have
+  \[m(\bigcup I_i)\leq m(E)\leq m(\bigcup J_k)
+  \]
+  we may conclude that $\int\chi_E$ is equal to $m(E)$.
+\end{proof}
+
+If one re-examines the definition and properties of the Jordan measure, it should be that there is a close parallel between the Riemann integral and Jordan measure. The normality property above begins to make this connection formal. The next result further strenghens the two-way connection between the two notions.
+
+\begin{thm}
+  If $f$ is a nonnegative, bounded function on $[a,b]$, then $f$ is Riemann integrable if and only if the region $E=\set{(x,y)\mid0\leq y\leq f(x)}$ is Jordan measurable. Moreover, in this case we have $\int f=m(E)$.
+\end{thm}
+
+\begin{proof}
+  First suppose that $f$ is Riemann integrable and let $\epsilon>0$ be given. Choose pc functions $g,h$ such that $g\leq f\leq h$ and $\text{pc}\int(g-h)<\epsilon$. Let $A$ be the region under the graph of $g$ and let $B$ be the region under the graph of $h$. It is clear that $A,B$ are elementary, $A\subset E\subset B$, and $m(B\setminus A)<\epsilon$.
+
+  Conversely if $E$ is Jordan measurable we can find an elementary $A$ such that $A\subset E$ and $m(E\setminus A)<\epsilon$. Using our usual grid argument, we can suppose that there is a sequence of disjoint intervals $I_j$ such that $A$ is a union of boxes with horizontal sides selected from the $I_j$. Pairing each $I_j$ with the constant $c_j=$ the maximum of the vertical coordinates of all of the boxes with horizontal side $I_j$, we obtain a pc function $g$. It is easy to see that $m(A)\leq \text{pc}\int g\leq m(E)$. This shows that the lower Riemann integral of $f$ is $m(E)$. We can proceed similarly using an outer approximation $B$ to show that the upper Riemann integral of $f$ is $m(E)$ too.
+\end{proof}
+
+Depending on when you last studied Riemann integration, you may better recall Riemann's classical approach rather than the Darboux approach above. This version involves a quite expansive notation:
+
+\begin{itemize}
+\item $f$ denotes a real-valued, bounded function defined on the interval $[a,b]$.
+\item $x_0,x_1,\ldots,x_k$ denotes an increasing sequence of points in $[a,b]$ (they will be rectangle endpoints), where $x_0=a$ and $x_k=b$.
+\item $\mathcal P$ denotes the partition of $[a,b]$ into subintervals defined by the $x_i$, that is, into subintervals $[x_{i-1},x_i]$.
+\item $\delta x_i$ denotes the length of the $i$th interval, $x_i-x_{i-1}$.
+\item $\|\mathcal P\|$ denotes the norm of the partition, $\max\delta x_i$.
+\item $x_1^*,\ldots,x_k^*$ denotes any selection of points such that $x_i^*\in[x_i,x_{i+1}]$.
+\end{itemize}
+
+With these pieces in hand, we can define the Riemann sums and the Riemann integral.
+
+\begin{defn}
+  With $f$, $\mathcal P$, $\delta x_i$, $x_i^*$ as above, the corresponding \emph{Riemann sum} is:
+  \[\mathcal R(f,\mathcal  P,x_i^*)=\sum f(x_i^*)\delta x_i
+  \]
+  The \emph{Riemann integral} of $f$ on $[a,b]$ is then defined by
+  \[R\int_a^b f=\lim_{\|\mathcal P\|\to0}\mathcal R(f,\mathcal P,x_i^*)
+  \]
+  provided this limit exists. Here the limit ``exists'' and equals $L$ if for all $\epsilon>0$ there exists $\delta>0$ such that for all $\mathcal P$ and $x_i^*$ we have $\|\mathcal P\|<\delta$ implies $|R(f,\mathcal P,x_i^*)-L|<\epsilon$.
+\end{defn}
+
+It is an exercise in both notation and partition management to check that $f$ is Riemann integrable in the Darboux sense described earlier in this section if and only if $f$ is Riemann integrable in the classical Riemann sense just defined.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction to Lebesgue measure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S1.2, first few pages
+\end{reading}
+
+The Jordan measure that we have constructed works very well for the sets that it measures. And the Riemann integral works very well for the functions that it integrates. But there are several shortcomings that we have not discussed, and several more too.
+\begin{itemize}
+\item Unbounded sets are not Jordan measurable, and unbounded functions are not Riemann integrable
+\item There are examples of bounded sets which are open or closed, but still not Jordan measurable
+\item A countable union of Jordan measurable sets need not be Jordan measurable
+\item A pointwise limit of Riemann integrable functions need not be Riemann integrable, even if it is again bounded
+\end{itemize}
+
+In this section we will tweak the definiton of Jordan measure. The resulting measure will be stronger, though it will be harder to establish that it has the properties we desire of a measure. Recalling the definition of Jordan outer measure, it is clear that we can write it as follows.
+\[m^{*j}(A)=\inf\set{\left.\sum_1^k \vol(B_i)\;\right|\;\text{$B_i$ are boxes and }A\subset\bigcup_1^kB_i}
+\]
+The idea of the Lebesgue measure is simply to replace the finite union and summation with a countable one.
+
+\begin{defn}
+  Let $A$ be any subset of $\RR^n$. The \emph{Lebesgue outer measure} of $A$ is
+  \[m^*(A)=\inf\set{\left.\sum_1^\infty \vol(B_i)\;\right|\;\text{$B_i$ are boxes and }A\subset\bigcup_1^\infty B_i}
+  \]
+\end{defn}
+
+Notice that we have dropped the assumption that $A$ is bounded. There are many examples of unbounded sets with Lebesgue outer measure zero. In fact, every countable set has lebesgue outer measure zero.
+
+We also remark that we will not define an ``inner'' version of Lebesgue measure analogous to the Jordan inner measure. The reason is that we do not wish to assume that positive measure sets will contain any positive volume boxes. For example, the set $[0,1]\setminus\QQ$ should have a measure of $1$ but has lower Jordan measure $0$. In fact, if one replaces the finite summation from Jordan inner measure with a countable summation, then the resulting value does not change!
+
+Without an inner measure, we cannot define Lebesgue measurability simply by requiring outer measure equals inner measure. In order to find another way to define Lebesgue measurability, we recall that Jordan measurability could equivalently be stated: $A$ is Jordan measurable if and only if for all $\epsilon>0$ there exists an elementary set $E$ such that $A\subset E$ and $m^{*j}(E\setminus A)<\epsilon$.
+
+\begin{defn}
+  Let $A$ be any subset of $\RR^n$. We say that $A$ is \emph{Lebesgue measurable} if for every $\epsilon>0$ there exists an open set $O$ such that $A\subset O$ and $m^*(O\setminus A)<\epsilon$. When this is the case, we define $m(A)=m^*(A)$ to be the \emph{Lebesgue measure} of $A$.
+\end{defn}
+
+The definition can also be written with a countable union of boxes in place of the open set $O$; this is less elegant but allows greater symmetry with our definition of Lebesgue outer measure.
+
+We will see in the rest of this section and the next that the Lebesgue measure agrees with the Jordan measure on the Jordan measurable sets, and moreover is capable of measuring significantly more sets. In fact the Lebesgue measurable sets encompass almost everything seen in real analysis and its applications, with exceptions including just certain set constructions from AC.  The Lebesgue measure also satisfies all the measure axioms that we have mentioned so far, including their countable versions.
+
+Likewise, later on we will introduce the corresponding Lebesgue integral. This integral agrees with the Riemann integral, and is capable of integrating significantly more functions. It also has significantly stronger properties than the Riemann integral, including a countable version of linearity.
+
+Before we begin working to establish all these claims, we study the Lebesgue outer measure further. Before continuing, it is useful to lay out what properties are expected of an outer measure. The following will be referred to as the \emph{outer measure axioms}.
+\begin{enumerate}
+\item (empty set) $m^*(\emptyset)=0$
+\item (monotonicity) If $E\subset F$ then $m^*(E)\leq m^*(F)$
+\item (countable subadditivity) $m^*(\bigcup E_n)\leq\sum m^*(E_n)$
+\end{enumerate}
+Since the outer measure applies to all sets, and we have seen there exist non-measurable sets, we do not expect it to satisfy additivity in general. Still axiom (c) is quite strong: the Jordan outer measure satisfies finite additivity but not countable subadditivity.
+
+\begin{prop}
+  The Lebesgue outer measure satisfies the outer measure axioms (a)--(c).
+\end{prop}
+
+\begin{proof}
+  The axioms (a) and (b) are both trivial, so it remains to prove only axiom (c). Let $E_n$ be arbitrary sets and let $\epsilon>0$ be given. From the definition of Lebegue outer measure, for each $n$ we can find a sequence of boxes $B_i^n$ such that $E_n\subset\bigcup_iB_i^n$ and $\sum_im(B_i^n)<m^*(E_n)+\epsilon/2^n$.
+
+  Taking unions, we have $\bigcup E_n\subset\bigcup_n\bigcup_iB_i^n$, and moreover:
+  \begin{align*}
+    m^*(\bigcup E_n)&\leq\sum_n\sum_i\vol(B_i^n)\\
+                    &\leq\sum_n\left(m^*(E_n)+\epsilon/2^n\right)\\
+                    &\leq\sum_nm^*(E_n)+2\epsilon
+  \end{align*}
+  Taking $\epsilon\to0$, we obtain the desired inequality $m^*(\bigcup E_n)\leq\sum m^*(E_n)$.
+\end{proof}
+
+The bookkeeping used in the above proof is called an ``$\epsilon/2^n$ argument'', and is used frequently in countable approximations.
+
+In the next sections we will work to address under what circumstances the Lebesgue outer measure satisfies additivity or otherwise behaves well.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lebesgue outer measure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.2.1.
+\end{reading}
+
+We have shown that the Lebesgue outer measure satisfies countable subadditivity. We are really interested in additivity, but we know that even the finite additivity axiom cannot hold for all sets. In the end, we will prove that countable additivity is true for measurable sets. For the moment, we will be satisfied with the following version of additivity which holds in special cases.
+
+%% But when is this used??
+
+\begin{lem}
+  Suppose that $E,F$ are separated, that is, that $d(E,F)=\inf\set{d(x,y)\mid x\in E, y\in F}>0$. Then $m^*(E\cup F)=m^*(E)+m^*(F)$.
+\end{lem}
+
+\begin{proof}
+  Subbaditivity implies that $m^*(E\cup F)\leq m^*(E)+m^*(F)$, so it remains only to show $m^*(E\cup F)\geq m^*(E)+m^*(F)$. Applying the definition of $m^*(E\cup F)$, given any $\epsilon>0$ we can find boxes $B_i$ such that $E\cup F\subset\bigcup B_i$ and $\sum\vol(B_i)-m^*(E\cup F)<\epsilon$.
+
+  Let us first consider an easy case when each $B_i$ meets at most one of the sets $E,F$. Then we can rewrite the sequence $\{B_i\}$ as $\{C_i\}\cup\{D_i\}$, where the $C_i$'s meet only $E$ and the $D_i$'s meet only $F$. Now
+  \begin{align*}
+    m^*(E\cup F)&>\sum\vol(B_i)-\epsilon\\
+                &=\sum\vol(C_i)+\sum\vol(D_i)-\epsilon\\
+                &\geq m^*(E)+m^*(F)-\epsilon
+  \end{align*}
+  Taking $\epsilon\to0$, we are done in this case.
+
+  In the general case, we can reduce to the easy one by partitioning each $B_i$ into smaller boxes, each with diameter smaller than $d(E,F)$. Once this is done, each new box meets at most one of $E,F$ and we may proceed as above.
+\end{proof}
+
+Up to this point, we have not yet shown that $m^*$ ever takes a nonzero value! In fact $m^*$ satisfies a normality axiom that the outer measure of an elementary is equal to its elementary measure. When we proved this property for Jordan measure, we started by showing that one cannot partition an interval into finitely many subintervals whose lengths somehow add up to less than the original. For countable partitions this is intuitively still true, but much harder to show!
+
+\begin{thm}
+  If $E$ is an elementary subset of $\RR^n$, then $m^*(E)$ agrees with the elementary measure $m_e(E)$.
+\end{thm}
+
+\begin{proof}
+  It is clear that $m^*(E)\leq m_e(E)$, since $E$ is itself a union of boxes whose volumes sum to $m(E)$. Thus it remains only to show $m^*(E)\geq m(E)$. Appealing to the definition of $m^*(E)$, given any $\epsilon>0$ we can find boxes $B_i$ such that $E\subset\bigcup B_i$ and $m^*(E)>\sum\vol(B_i)-\epsilon$. We would like to say that the latter quantity is $\geq m_e(E)$, but unfortunately the elementary measure is only \emph{finitely} subadditive.
+
+  In order to proceed, let us temporarily assume that $E$ is closed and the $B_i$ are open. Then by the compactness of $E$, just finitely many of the $B_i$ are needed to cover $E$. Thus the above argument works in this case!
+
+  In order to assume that the $B_i$ are open, we can enlarge each slightly and find an open box $B'_i$ such that $B_i\subset B'_i$ and $\vol(B'_i)-\vol(B_i)<\epsilon/2^n$.
+
+  In order to assume that $E$ is closed, first write it as a finite union of disjoint boxes $C_1,\ldots C_k$. Shrinking each $C_i$ slightly, we can find a closed box $C'_i\subset C_i$ such that $m_e(C_i\setminus C'_i)<\epsilon/k$. Replacing $E$ with $\bigcup C'_i$ we obtain a closed set as desired.
+\end{proof}
+
+As a consequence of the theorem, we now know that finite additivity holds for $m^*$ for finite unions of disjoint boxes (after all it is true for the elementary measure). In fact it also holds for finite unions of almost disjoint boxes: here two boxes are said to be \emph{almost disjoint} if they have disjoint interiors. The next result extends this from finite to countable unions.
+
+\begin{thm}
+  Suppose $B_i$ is a sequence of pairwise almost disjoint boxes. Then $m^*(\bigcup B_i)=\sum\vol(B_i)$.
+\end{thm}
+
+\begin{proof}
+  By subadditivity together with the previous theorem, we have $m^*(\bigcup B_i)\leq\sum m^*(B_i)=\sum\vol(B_i)$. Hence it remains only to show $m^*(\bigcup B_i)\geq\sum\vol(B_i)$. For this, let $N\in\NN$ be given, and note that $\bigcup_1^NB_i$ is an elementary set. Thus by monotonicity together with the previous theorem, we have
+  \begin{align*}
+    m^*(\bigcup B_i)&\geq m^*(\bigcup_1^NB_i)\\
+                    &=m_e(\bigcup_1^NB_i)\\
+                    &=\sum_1^N\vol(B_i)
+  \end{align*}
+  Taking $N\to\infty$, we obtain the desired inequality.
+\end{proof}
+
+We are finally making some progress: for unions of almost disjoint sequences of boxes, the additivity property holds and the measure of the union is equal to the expected quantity. This leads one to ask what kinds of sets can be written as unions of almost disjoint sequences of boxes, and the following result shows this at least includes the open sets.
+
+\begin{prop}
+  Any open set $O$ can be written as a union of a sequence of pairwise almost disjoint boxes.
+\end{prop}
+
+\begin{proof}
+  Consider the family $\mathcal Q$ of \emph{dyadic cubes}, that is, cubes with each side of the form $[m/2^n,(m+1)/2^n]$ where $m\leq 2^n$. The family $\mathcal Q$ has the nesting property, that is, any two such cubes are almost disjoint or else one is contained in the other.
+
+  It is not difficult to observe that $\mathcal Q$ is a basis for the topology of $\RR^n$. In particular, for any $x\in O$ there exists a cube $B_x\in\mathcal Q$ such that $x\in B_x\subset O$. Thu union of all $B_x$ for $x\in O$ is a covering of $O$ by dyadic cubes. Now eliminate duplicates from this covering, that is, remove any cube in the covering that is contained in some other cube of the covering. Since we have bounded the sizes of the cubes, there will still be maximal cubes left over. The result is a covering of $O$ by pairwise almost disjoint dyadic cubes.
+\end{proof}
+
+The above result gives a very direct method of calculating the Lebesgue outer measure (and hence the Lebesgue measure) of any open set! We close this section with the following so-called ``outer regularity lemma'', which shows that the Lebesgue outer measure is determined by its values on the open sets. When combined with the previous result, this gives a kind of general formula for the outer measure.
+
+\begin{lem}
+  Let $E$ be any subset of $\RR^n$. Then $m^*(E)=\inf\set{m^*(O)\mid\text{$O$ is open and }E\subset O}$.
+\end{lem}
+
+\begin{proof}
+  It is clear from monotonicity of $m^*$ that $\leq$ holds. Thus it remains only to show $\geq$. Applying the definition of $m^*(E)$ we can find boxes $B_i$ such that $E\subset\bigcup B_i$ and $\sum\vol(B_i)-m^*(E)<\epsilon$. Arguing as in an earlier proof, we can enlarge the $B_i$ slightly to assume without loss of generality that they are open. Then
+  \begin{align*}
+    m^*(E)&\geq\sum\vol(B_i)-\epsilon\\
+          &\geq m^*(\bigcup B_i)\\
+          &\geq \inf\set{m^*(O)\mid\text{$O$ is open and }E\subset O}-\epsilon
+  \end{align*}
+  Taking $\epsilon\to0$, we obtain the desired result.
+\end{proof}
+
+In the next section we will use these partial results to conclude that the Lebesgue (outer) measure always behaves well on the measurable sets.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lebesgue measurability}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.2.2.
+\end{reading}
+
+Recall that a set $E$ is called Lebesgue measurable if it can be well-approximated from the outside by open sets. That is, if for all $\epsilon>0$ there is an open set $O$ such that $m^*(O\setminus E)<\epsilon$. In the last section we saw that open sets can be written as unions of boxes, and it turns out one may replace $O$ with a union of boxes in the definition.
+
+It is tautological from the definition of measurability that open sets are Lebesgue measurable. In the next result we work to establish that many, many other sets are Lebesgue measurable too.
+
+\begin{thm}
+  Open and closed sets are Lebesgue measurable. Complements, countable unions, and countable intersections of measurable sets are measurable.
+\end{thm}
+
+\begin{proof}
+  We have already established that open sets are Lebesgue measurable.
+
+  For countable unions, suppose that $E_n$ are Lebesgue measurable. Given $\epsilon>0$, find open sets $O_n$ such that $E_n\subset O_n$ and $m^*(O_n\setminus E_n)<\epsilon/2^n$. Then we have
+  \begin{align*}
+    m^*(\bigcup O_n\smallsetminus\bigcup E_n)
+    &\leq m^*(\bigcup O_n\setminus E_n)\\
+    &\leq \sum m^*(O_n\setminus E_n)\\
+    &\leq \sum \epsilon/2^n=2\epsilon
+  \end{align*}
+  This shows that $\bigcup E_n$ is measurable.
+
+  For closed sets, assume first that $E$ is closed and bounded, and thus compact. Using the outer regularity lemma we can find an open set $O$ such that $E\subset O$ and $m^*(O)-m^*(E)<\epsilon$. We wish to show that $m^*(O\setminus E)<\epsilon$ too. Since $O\setminus E$ is open, we can write it as an almost disjoint union of closed dyadic cubes $C_n$. Then $\bigcup_1^N C_n$ is compact and thus separated from the compact set $E$. We proved that additivity holds for separated sets, so we have:
+  \begin{align*}
+    m^*(E)+m^*(\bigcup_1^NC_i)&=m^*(E\cup\bigcup_1^NC_i)\\
+                              &\leq m^*(O)\\
+                              &<m^*(E)+\epsilon
+  \end{align*}
+  It follows that $\sum_1^N\vol(C_i)=m^*(\bigcup_1^NC_i)<\epsilon$, and taking $N\to\infty$ we have $\sum\vol(C_i)\leq\epsilon$. This shows that $m^*(O\setminus E)\leq\epsilon$, as desired.
+
+  In general a closed set can be written as a countable union of compact sets, and we have already handled the case of countable unions.
+
+  For complements, let $E$ be measurable and for each $n$ find an open set $O_n$ such that $E\subset O_n$ and $m^*(O_n\setminus E)<1/n$. Then we have $m^*(\bigcap O_n\setminus E)=0$. Meanwhile taking complements we have $\bigcup O_n^c\subset E^c$ and $m^*(E^c\setminus\bigcup O_n^c)=0$. In particular $E^c$ can be expressed as a union of the two measurable sets $\bigcup O_n^c$ and $E^c\setminus\bigcup O_n^c$. Thus $E^c$ is measurable too.
+
+  For countable intersections, we can simply apply Demorgan's laws to reduce it to complements and countable unions. Whew!
+\end{proof}
+
+The above theorem thus shows that the Lebesgue measurable sets form a \emph{$\sigma$-algebra}, that is, a family of sets that is closed under countable unions, countable intersections, and complements. It moreover shows that the Lebesgue measurable sets includes the well-known class of \emph{Borel sets}, that is, the $\sigma$-algebra generated by the open and closed sets. The Borel sets sets are often identified as those which can be \emph{explicitly described}. Most sets we encounter in analysis can be explicitly described and are thus Borel and Lebesgue measurable.
+
+We now know that Borel sets are Lebesgue measurable, null sets are Lebesgue measurable, and the measurable sets form a $\sigma$-algebra. The next result concludes that this information characterizes the Lebesgue measurable sets.
+
+\begin{prop}
+  The collection of Lebesgue measurable sets is the least $\sigma$-algebra containing both the open sets and the Lebesgue null sets.
+\end{prop}
+
+\begin{proof}
+  It is clear that the Lebesgue measurable sets are a $\sigma$-algebra containing the open sets and the Lebesgue null sets. On the othe hand suppose that $E$ is a Lebesgue measurable set. By the previous lemma for all $n$ we can find open sets $O_n$ such that $E\subset O_n$ and $m^*(O_n\setminus E)<1/n$. It follows that $N=\bigcap O_n\setminus E$ is Lebesgue null. Now have that
+  \[E=\bigcap(O_n)\cap N^c
+  \]
+  and thus $E$ lies in the algebra generated by the open sets and the Lebesgue null sets.
+\end{proof}
+
+We conclude this section with some useful equivalents of Lebesgue measurability, similar to the ones we developed for Jordan measurability. The following result implies that the Lebesgue measurable sets can be characterized as those which are ``almost open.''
+
+\begin{lem}
+  A set $E$ is Lebesgue measurable if and only if for all $\epsilon>0$ there exists an open set $O$ such that $m^*(O\triangle E)<\epsilon$.
+\end{lem}
+
+\begin{proof}
+  Our original definition of Lebesgue measurability automatically gives an open set $O$ such that $m^*(O\triangle E)<\epsilon$. Conversely, let $E$ be any set and suppose the condition holds. Then for any $\epsilon$ we can find an open set $O_\epsilon$ such that $m^*(O_\epsilon\triangle E)<\epsilon$. Let $U_\epsilon=\bigcup O_{\epsilon/2^k}$. Then it is not difficult to check that $m^*(U_\epsilon\setminus E)\leq\epsilon$, and $m^*(E\setminus U_\epsilon)=0$. Finally letting $F=\bigcap_nU_{1/n}$ we have that $F$ is a measurable set and both $m^*(E\setminus F)=0$ and $m^*(F\smallsetminus E)=0$. We have thus shown that $E$ differs from a measurable set by a null set, and we leave it as an exercise to check that this implies $E$ is measurable too.
+\end{proof}
+
+Perhaps even more surprising, the Lebesgue measurable sets of finite measure can be characterized as those which are ``almost elementary''.
+
+\begin{lem}
+  A set $E$ is Lebesgue measurable with finite Lebesgue measure if and only if for all $\epsilon>0$ there exists an elementary set $A$ such that $m^*(A\triangle E)<\epsilon$.
+\end{lem}
+
+\begin{proof}
+  Suppose that $E$ is Lebesgue measurable and let $\epsilon>0$ be given. Let $O$ be an open set such that $E\subset O$ and $m^*(O\setminus E)<\epsilon$. Then $O$ can be written as a union of almost disjoint boxes $O=\bigcup B_i$, and we know that $m(O)=\sum\vol(B_i)$.
+
+  Now $m(O)<m(E)+\epsilon$ and the right-hand side is finite, so the sum $\sum\vol(B_i)$ converges. Thus there exists some $N$ such that $\sum_{N+1}^\infty\vol(B_i)<\epsilon$. Letting $A=\bigcup_1^NB_i$, we have that $A$ is elementary and $m(O\setminus A)<\epsilon$. Thus we have
+  \begin{align*}
+    m^*(E\triangle A)&=m^*(E\setminus A)+m^*(A\setminus E)\\
+                     &\leq m^*(O\setminus A)+m^*(O\setminus E)\\
+                     &<2\epsilon
+  \end{align*}
+  which is sufficient to prove the implication. The converse implication is similar to the previous lemma.
+\end{proof}
+
+We have now established many useful properties of the outer measure $m^*$ and shown that it has a broad collection of measurable sets. In the next section we will confirm as promised that $m^*$ behaves very well when restricted to the collection of measurable sets.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lebesgue measure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.2.2
+\end{reading}
+
+In the previous section we established that many sets are Lebesgue measurable. When $E$ is Lebesgue measurable we simply write $m(E)$ for $m^*(E)$, and we call $m$ the \emph{Lebesgue measure}. We are finally ready to prove that the Lebesgue measure satisfies the requirements of a measure that we laid out in the first section, at least with respect to the Lebesgue measurable sets.
+
+\begin{thm}
+  The Lebesge measure satisfies the axioms
+  \begin{enumerate}
+  \item (normality) if $B$ is a box then $m(B)=\vol(B)$
+  \item (translation-invariance) $m(E+x)=m(E)$ for every measurable set $E$
+  \item (countable additivity) $m(\bigcup E_n)=\sum m(E_n)$ for every sequence of pairwise disjoint measurable sets $E_n$
+  \end{enumerate}
+\end{thm}
+
+\begin{proof}
+  We have already established normality for $m=m^*$, and translation-invariance is clear from the definitions.
+
+  For countable additivity, first recall that we always have subadditivity so we need only show $m(\bigcup E_n)\geq\sum m(E_n)$. Suppose first that the $E_n$ are compact. Then they are pairwise separated, so by induction we can establish that $m(\bigcup_1^NE_n)=\sum_1^Nm(E_n)$. It follows that $m(\bigcup E_n)\geq\sum_1^Nm(E_n)$. Taking $N\to\infty$ we have $m(\bigcup E_n)\geq\sum m(E_n)$ as desired.
+
+  Next assume that the $E_n$ are bounded but not necessarily closed. By the measurability of $E_n^c$ we can find open sets $O_n$ such that $E_n^c\subset O_n$ and $m^*(O_n\setminus E_n^c)<\epsilon/2^n$. Taking complements we thus have compact sets $K_n\subset E_n$ such that $m^*(E_n\setminus K_n)<\epsilon/2^n$. Now using the additivity for compact sets,
+  \begin{align*}
+    m(\bigcup E_n)&\geq m(\bigcup K_n)\\
+                  &=\sum m(K_n)\\
+                  &\geq\sum(m(E_n)-\epsilon/2^n)\\
+                  &=\sum m(E_n)-\epsilon
+  \end{align*}
+  Taking $\epsilon\to0$, we are finished in this case.
+
+  Finally for general $E_n$, decompose $\RR^d$ into disjoint bounded cells $A_m$. Then $E_n=\bigcup_mE_n\cap A_m$.
+  \begin{align*}
+    m(\bigcup E_n)&=\sum_n\sum_mm(E_n\cap A_m)\\
+                  &=\sum m(E_n)
+  \end{align*}
+  and the proof is complete.
+\end{proof}
+
+We have now established the existence and all of the promised axioms of the Lebesgue measure. Additional useful properties can be derived from the axioms, such as the following result concerning continuity of the measure function.
+
+\begin{thm}
+  \begin{itemize}
+  \item (upwards monotone convergence theorem) If $E_n$ are measurable and $E_n\subset E_{n+1}$ then $m(\bigcup E_n)=\lim m(E_n)$.
+  \item (downwards monotone convergence theorem) If $E_n$ are measurable and $E_{n+1}\subset E_n$ then $m(\bigcap E_n)=\lim m(E_n)$, provided some $E_n$ has finite measure.
+  \end{itemize}
+\end{thm}
+
+\begin{proof}
+  For the upwards MCT, let $E'_n=E_n\setminus E_{n-1}$ and note that the $E'_n$ are disjoint and have the same union $\bigcup E'_n=\bigcup E_n$. As a base case we let $E_0=\emptyset$. Applying countable additivity, we now have
+  \begin{align*}
+    m(\bigcup E_n)&=m(\bigcup E'_n)\\
+                  &=\sum m(E'_n)\\
+                  &=\sum m(E_n)-m(E_{n-1})\\
+                  &=\lim_N\sum_1^N m(E_n)-m(E_{n-1})\\
+                  &=\lim_N m(E_N)
+  \end{align*}
+  The last equality holds simply by telescoping cancellation, and gives us the desired result.
+
+  For the downwards MCT, we can suppose without loss of generality that $E_1$ has finite measure. We thus take complements inside $E_1$ to obtain the sequence $F_n=E_1\setminus E_n$. Then the $F_n$ form an increasing sequence and $\bigcup F_n=E_1\setminus\bigcap E_n$. Using the upwards MCT, we now have
+  \begin{align*}
+    m(E_1)&=m(\bigcap E_n)+m(\bigcup F_n)\\
+          &=m(\bigcap E_n)+\lim m(F_n)\\
+          &=m(\bigcap E_n)+m(E_1)-\lim m(E_n)
+  \end{align*}
+  Cancelling the $m(E_1)$ from the first and last expression, we obtain that $0=m(\bigcap E_n)-\lim m(E_n)$, which implies the desired result.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Measure and integration}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Simple integration}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.3 introduction
+\end{reading}
+
+In this chapter we investigate integration of real and complex-valued functions. Just as the Jordan measure corresponded tightly with the Riemann integral, the Lebesgue measure can be associated with the so-called Lebesgue integral. The integral will serve most of the purposes needed in calculus, and will also help set the stage for our investigations in functional analysis.
+
+Just like the situation with the two measures, the Lebsegue integral will generalize and extend the Riemann integral while still ensuring that many of the key properties hold. In addition many new stronger properties will hold as well, such as infinite versions of additivity and stability under limits.
+
+% The following preview will actually be applied two sections from now. One may consider moving it there.
+
+We will define integration in stages, beginning with the nonnegative real-valued functions $f$. To see why this is a good start, it is useful to recall the development of infinite series. Recall that if $a_n\geq0$ we can define $\sum a_n$ as simpl $\sup_N\sum_1^Na_n$. Next if $a_n$ are arbitrary real numbers we say that the terms are \emph{absolutely summable} if $\sum|a_n|<\infty$. In that case we divide the terms into the negative terms $a_{n_i}$ and nonnegative terms $a_{p_i}$, and write $\sum a_n=\sum a_{p_i}-\sum|a_{n_i}|$. Note that the assumption that $a_n$ is absolutely summable guarantees that the latter expression is not indeterminate. Finally if $a_n$ are complex numbers then we again assume that $\sum|a_n|<\infty$, that is, the terms is complex absolutely summable. In that case we can divide each term into its real part $\Re a_n$ and imaginary part $\Im a_n$, and define $\sum a_n=\sum\Re a_n+i\sum\Im a_n$.
+
+Recall that the Riemann integral was defined first for piecewise constant functions, that is, functions which take constant values on each of finitely many intervals. The Lebesgue integral will be defined in terms of the more powerful ``simple'' functions.
+
+\begin{defn}
+  A function $f\colon\RR^n\to\CC$ is called \emph{simple} if ther exists a partition of $\RR^n$ into finitely many Lebesgue measurable subsets $E_1,\ldots,E_k$ such that $f$ takes a constant value $c_i$ on each $E_i$.
+\end{defn}
+
+In other words, $f$ is piecewise constant if $f$ is of the form $\sum_1^kc_i\chi_{E_i}$ where $E_i$ are Lebesgue measurable subsets.
+
+\begin{defn}
+  If $f=\sum_1^kc_i\chi_{E_i}$ is a simple function and $f\geq0$, then the \emph{simple integral} of $f$ is defined to be $\sint f=\sum_1^kc_im(E_i)$.
+\end{defn}
+
+Note that we assume $f\geq0$ to ensure that the simple integral is never indeterminate. As was the case with both elementary measure and pc integral, we have to check that the simple integral is well-defined.
+
+% Why did we not do this check in the case of the pc integral?
+
+\begin{lem}
+  If $f=\sum_1^lc_i\chi_{E_i}$ and $f=\sum_1^md_j\chi_{F_j}$ then we have $\sum_1^lc_im(E_i)=\sum_1^md_j\chi_{F_j}$.
+\end{lem}
+
+\begin{proof}
+  We use the common refinement approach. By considering intersections of all $k+l$ sets, we can find a sequence of nonempty disjoint sets $A_1,\ldots,A_n$ such that each of the $E_i$ and $F_j$ can be written as a union of some of the $A_k$'s. Note that since the $E_i$ and $F_j$ are measurable, the $A_k$ are measurable too. Now let $x_k$ be an arbitrary point in $A_k$. We can calculate
+  \begin{align*}
+    \sum_{i=1}^lc_im(E_i)
+    &=\sum_{i=1}^lc_i\sum_{A_k\subset E_i}m(A_k)\\
+    &=\sum_{k=1}^n\sum_{E_i\supset A_k}c_im(A_k)\\
+    &=\sum_{k=1}^nf(x_k)m(A_k)\\
+    &=\sum_{k=1}^n\sum_{F_j\supset A_k}d_jm(A_k)\\
+    &=\sum_{k=1}^n\sum_{F_j\supset A_k}d_jm(A_k)=\sum_{j=1}^md_jm(F_j)
+  \end{align*}
+  This is what we desired.
+\end{proof}
+
+Having defined the simple integral, we outline some of its important properties that will be used later on. The first of these is that the value of the simple integral is insensitive to changes on a null set.
+
+In order to state this property and others cleanly, we introduce the terminology \emph{almost everywhere}. If a statement $S(x)$ with variable $x\in\RR$ holds for every $x$ outside of a null set, we sat that $S$ is true almost everywhere. For example, if $f(x)=0$ for $x\notin\QQ$ and $f(x)=1$ for $x\in\QQ$ (the Dirichlet function) we can say that $f=0$ almost everywhere.
+
+\begin{prop}
+  Let $f,g$ be simple functions.
+  \begin{enumerate}
+  \item (equivalence) if $f=g$ almost everywhere then $\sint f=\sint g$
+  \item (monotonicity) if $f\leq g$ almost everywhere then $\sint f\leq\sint g$.
+  \item (linearity) $\sint (cf)=c\cdot\sint f$, and $\sint (f+g)=\sint f+\sint g$.
+  \end{enumerate}
+\end{prop}
+
+\begin{proof}
+  We prove the first property (i), since after that properties (ii) and (iii) are very similar to the analogous properties of the Riemann integral. Given simple functions $f$ and $g$, we can refine their expressions to find measurable sets $E_1,\ldots,E_n$ and a null set $N$ such that $f=\sum c_i\chi_{E_i}+d\chi_n$ and $g=\sum c_i\chi_{E_i}+e\chi_N$. Then clearly the simple integral of both $f$ and $g$ evaluates to $\sum c_im(E_i)+0$.
+\end{proof}
+
+Throwing away null sets is common in analysis, and thanks to our understanding of the Lebesgue measure it carries with it a lot of power. When studying sets and functions in the measure context, it will even be useful to modify our logic. We will use the quantifiers $\forall^*x$ and $\exists^*x$ to mean ``the statement holds for all but a null set of $x$'' and ``there exists a non-null set of $x$ such that the statement holds''.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lebesgue measurability of functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.3.2
+\end{reading}
+
+Just as the Riemann integral was able to integrate functions that can be well approximated by pc functions, the Lebesgue integral will be able to integrate functions that can be well approximated by simple functions. At the time we did not dive any direct definition of the Riemann integrable functions. This time we will define in advance the class of functions for which the Lebesgue integral will make sense. As indicated, we begin with just the nonnegative real-valued functions.
+
+\begin{defn}
+  A nonnegative function $f$ on $\RR^n$ is said to be a \emph{measurable function} if $f$ is the pointwise limit of nonnegative simple functions.
+\end{defn}
+
+As was the case with Lebsegue measurable sets, the Lebesgue measurable functions can be equivalently described in a number of ways, each being in useful in some situations.
+
+\begin{thm}
+  \label{thm:measurable-equiv}
+  A nonnegative function $f$ is measurable if and only if either of the following holds.
+  \begin{enumerate}
+  \item there is a sequence $f_n$ of simple functions such that the $f_n$ are bounded and have bounded support, the $f_n$ are increasing $f_n\leq f_{n+1}$, and $f=\sup f_n$;
+  \item for any open set $S$ (respectively: closed set, interval, ray, etc) the preimage $f^{-1}(S)$ is Lebesgue measurable.
+  \end{enumerate}
+\end{thm}
+
+Before the proof, recall that given a sequence $x_n$ we define $\limsup x_n=\inf_N\sup_{n\geq N}x_n$ and $\liminf x_n=\sup_N\inf_{n\geq N}x_n$. The $\limsup$ is the largest limit point of $x_n$ and the $\liminf$ is the smallest limit point of $x_n$. The limit $\lim x_n$ exists if and only if $\limsup x_n=\liminf x_n$, and $\lim x_n$ equals this common value.
+
+\begin{proof}
+  We first show that if $f$ is measurable, then (b) holds. So let $f_n$ be simple functions such that $f=\lim f_n$ pointwise. Note that by the above discussion, we have that $f=\limsup f_n$ pointwise. Now suppose that $S=(\lambda,\infty)$ be an open infinite ray. Then we want to say that
+  \begin{align*}
+    x\in f^{-1}(S)&\iff f(x)>\lambda\\
+          &\iff \inf_N\sup_{n\geq N}f_n(x)>\lambda\\
+          &\iff (\forall N)(\exists n\geq N)f_n(x)>\lambda\\
+          &\iff x\in\bigcap_N\bigcup_{n\geq N}f_n^{-1}(\lambda,\infty]
+  \end{align*}
+  Since the $f_n$ are simple, it is clear that the set in the last line is measurable and therefore $f^{-1}(S)$ would be measurable. However the argument isn't right since for example it isn't quite true that $\inf_Nx_N\geq\lambda$ is equivalent to $(\forall N)x_N\geq\lambda$. The correct calculation introduces a couple additional steps but ultimately accomplishes the same thing:
+  \begin{align*}
+    x\in f^{-1}(S)&\iff f(x)>\lambda\\
+          &\iff (\exists\epsilon)f(x)\geq \lambda+\epsilon\\
+          &\iff (\exists\epsilon)(\forall N)\sup_{n\geq N} f_n(x)\geq\lambda+\epsilon\\
+          &\iff (\exists\epsilon)(\forall N)(\forall\eta)\sup_{n\geq N}f_n(x)>\lambda+\epsilon-\eta\\
+          &\iff (\exists\epsilon)(\forall N)(\forall\eta)(\exists n\geq N)f_n(x)>\lambda+\epsilon-\eta\\
+          &\iff x\in\bigcup_i\bigcap_N\bigcap_j\bigcup_{n\geq N}f_n^{-1}\left(\lambda+\frac1i-\frac1j,\infty\right]
+  \end{align*}
+  Once again, this establishes that $f^{-1}(S)$ is measurable. Now an analogous argument will allow us to handle the case when $S$ is a closed ray. Since any interval can be written in terms of rays using intersections and complements, and any open set can be written as a countable union of intervals, we can therefore conclude that if $S$ is any open set then $f^{-1}(S)$ is measurable. This establishes (b).
+
+  Next we argue that (b) implies (a). Suppose that $f$ satisfies condition (b). Given any $n$, we will define a nonnegative simple function $f_n\leq f$ as follows:
+  \[f_n(x)=
+    \begin{cases}
+      \max\set{\frac{i}{2^n}\mid \frac{i}{2^n}\leq f(x),n}&x\in[-n,n]\\
+      0&\text{otherwise}
+    \end{cases}
+  \]
+  The definition clearly ensures that $f_n$ has a bounded support, that $f_n$ is bounded, that $f_n\leq f$, that $f_n\leq f_{n+1}$, and that $f_n\to f$. It remains only to show that $f_n$ is simple, and since $f_n$ clearly takes just finitely many values we only have to check that each of these values has measurable preimage. But for instance we have $f_n(x)=\frac{i}{2^n}$ if and only if $f(x)$ lies in the interval $[\frac{i}{2^n},\frac{i+1}{2^n})$. It follows from property (b) that $f_n^{-1}(\frac{i}{2^n})$ is a measurable set, and therefore we have that $f_n$ is simple and $f$ satisfies property (a).
+
+  Finally it is trivial that (a) implies $f$ is measurable, so we have completed the proof.
+\end{proof}
+
+It is worth remarking that by property (b) of the Lemma, measurability can be viewed as a massive generalization of continuity. Recall that a function $f$ is continuous if and only if whenever $S$ is open we have $f^{-1}(S)$ open. In the property (b) we ask merely that $f^{-1}(S)$ be Lebesgue measurable, a much weaker demand.
+
+Notice also that since preimages are stable under unions, intersections, and complements, property (b) implies that if $S$ is Borel then $f^{-1}(S)$ will be measurable too. But if $S$ is merely measurable, there is no guarantee that $f^{-1}(S)$ will be measurable! To see this consider a function $f$ which is a bijection between $[0,1]$ and a null set. For example one can map $[0,1]$ into the Cantor set $C$ injectively almost everywhere by operating on binary and ternary expansions as follows:
+\[0.b_1b_2b_3\cdots\text{ (base 2)}\quad\mapsto\quad 0.(2b_1)(2b_2)(2b_3)\cdots\text{ (base 3)}
+\]
+Now if $N$ is a Lebesgue nonmeasurable subset of $[0,1]$, we have that $S=f(N)$ is null but the preimage $f^{-1}(S)$ is non-measurable.
+
+To close the section, we extended the definition of measurable function from nonnegative functions only to complex-valued functions in the following way. Recall that if $f$ is a real-valued function, then we can define its \emph{positive and negative parts}:
+\begin{align*}
+  f^+&=\max(f,0)\\
+  f^-&=\max(-f,0)
+\end{align*}
+We then have that $f^+$ and $f^-$ are nonnegative functions with $f=f^+-f^-$.
+
+\begin{defn}
+  If $f$ is an almost-everywhere defined complex-valued function on $\RR^n$ then $f$ is a \emph{measurable function} if and only if the positive and negative parts of its real and imaginary parts are measurable functions.
+\end{defn}
+
+We note that the alternate approach of simply replacing nonnegative simple functions with complex-valued simple functions in the definition of measurable function yields an equivalent definition.
+
+\begin{lem}
+  If $f$ is a comlex-valued function on $\RR^n$ then $f$ is measurable if and only if it is a pointwise limit of complex-valued simple functions.
+\end{lem}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lebesgue integration of nonnegative functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.3.3
+\end{reading}
+
+Previously we defined the simple functions, showed that they can be integrated in an obvious way, and showed that integral satisfied basic desirable properties such as additivity. Next we will define the lower integral for an arbitrary nonnegative function using approximations by simple integrals. After establishing some basic properties of the lower integral, we will see that it behaves very well when applied to measurable functions, and in that case we will simply call it the Lebesgue integral.
+
+\begin{defn}
+  Let $f$ be a nonnegative function on $\RR^d$. We define the \emph{lower Lebesgue integral} of $f$ by
+  \[\underline{\int}f=\sup\left\{\left.\text{s}\kern-2pt\int g\;\right|\; g\leq f,\text{ $g$ nonnegative simple}\right\}
+  \]
+  If $f$ is measurable, we define the \emph{Lebesgue integral} of $f$ to be $\int f=\lint f$.
+\end{defn}
+
+Before investigating the Lebesgue integral itself, we will describe several properties of the lower Lebesgue integral. While it is also possible to define the upper Lebesgue integral, it is of more limited use than in the Riemann case. Later we will define the upper Lebesgue integral just for bounded functions with bounded support. In general there are functions which are measurable and should have finite integral, that do have the correct lower Lebesgue integral, but do not have a finite upper Lebesgue integral.
+
+It is clear that the lower Lebesgue integral agrees with the simple integral on the simple functions. It also inherits the equivalence and monotonicity properties from the simple integral, but it does not quite inherit the additivity property in general.
+
+\begin{prop}
+  The lower Lebesgue integral satisfies the properties:
+  \begin{enumerate}
+  \item (equivalence) if $f=g$ almost everywhere then $\lint f=\lint g$;
+  \item (monotonicity) if $f\leq g$ almost everywhere then $\lint f\leq\lint g$; and
+  \item (superadditivity) $\lint(f+g)\geq\lint f+\lint g$.
+  \end{enumerate}
+\end{prop}
+
+\begin{proof}
+  The equivalence and monotonicity properties are clear from the analogous properties of simple integrals. For superadditivity, let $\epsilon>0$ be given and find simple functions $h$ and $k$ such that $h\leq f$, $k\leq g$, $\lint f-\sint h<\epsilon$, and $\lint g-\sint k<\epsilon$. Then we have $h+k\leq f+g$, and using monotinicity plus additivity for simple integrals:
+  \begin{align*}
+    \lint(f+g)&\geq\sint(h+k)\\
+              &=\sint h+\sint k\\
+              &>\lint f+\lint g-2\epsilon
+  \end{align*}
+  Letting $\epsilon\to0$, we obtain the desired result.
+\end{proof}
+
+The following fundamental pair of results establish that arbitrary functions can be approximated well by bounded functions with bounded support. This will prove very useful since the Lebesgue integral is much easier to work with in this case.
+
+\begin{lem}
+  Let $f$ be a nonnegative function on $\RR^d$. The lower Lebesgue integral satisfies the following identities.
+  \begin{enumerate}
+  \item (range truncation) If $f^N=\min(f,N)$ then $\lint f^N\to\lint f$.
+  \item (domain trunctation) If $f_N=f\chi_{[-N,N]^d}$ then $\lint f_N\to\lint f$.
+  \end{enumerate}
+\end{lem}
+
+\begin{proof}
+  For range truncation, let us first assume that $\lint f<\infty$. Given $\epsilon>0$ we can find a simple function $g$ such that $g\leq f$ and $\lint f-\sint g<\epsilon$. By our assumption $g$ must be bounded almost everywhere, which implies that for $N$ large enough we have $g\leq f^N$ too. Now by monotonicity $\lint f-\lint f^N\leq \lint f-\sint g<\epsilon$, which shows the desired result. The argument is similar in the case $\lint f=\infty$.
+
+  (b) Again let $\epsilon$ be given and find a simple function $g$ such that $g\leq f$ and $\lint f-\sint g<\epsilon$. Write $g=\sum_1^kc_i\chi_{E_i}$. Now we look at the simple integral of $g_N$:
+  \begin{align*}
+    \sint g_N&=\sum_1^kc_im(E_i\cap[-N,N]^d)\\
+                    &\to\sum_1^kc_im(E_i)=\sint g
+  \end{align*}
+  Where here $N\to\infty$ and we are applying the upwards monotone convergence theorem. Thus we can find $N$ large enough that $\sint g-\sint g_N<\epsilon$. Again using monotonicity we conclude that $\lint f-\lint f_N\leq\lint f-\sint g_N<2\epsilon$.
+\end{proof}
+
+We are now ready to show that the Lebesgue integral behaves well when applied to measurable functions.
+
+\begin{thm}
+  If $f,g$ are nonnegative measurable functions, then $\int(f+g)=\int f+\int g$.
+\end{thm}
+
+\begin{proof}
+  First suppose that $f,g$ are bounded functions with bounded supports. For such functions, it is useful to define the upper Lebesgue integral in the obvious way:
+  \[\ovint f=\inf\left\{\left.\sint h\;\right|\;f\leq h\text{, $h$ simple}\right\}
+  \]
+  We claim that under our hypotheses, we in fact have $\lint f=\ovint f$ (and similarly for $g$ and $f+g$).
+
+  To see this recall that since $f$ is measurable, we can find simple functions $f_n$ such that $f_n\leq f_{n+1}$ and $f_n\to f$. Note also that since $f$ is bounded, the construction of the $f_n$ from Theorem~\ref{thm:measurable-equiv} in fact showed that the $f_n$ converge \emph{uniformly} to $f$. (Indeed once $n$ surpasses the bound for $f$, then $f_n$ always lie within $1/n$ of $f$.) Thus given $\epsilon>0$ we can find $n$ such that
+  \[f\geq f_n\geq f-\epsilon\chi_S
+  \]
+  where $S$ is a support for $f$. Taking $\lint$ of the first inequality and $\ovint$ of the second, we obtain
+  \[\lint f\geq\sint f_n\geq\ovint(f-\epsilon\chi_S)=\ovint f-\epsilon m(S)
+  \]
+  Letting $\epsilon\to0$ we obtain the desired result.
+
+  Now we have already shown that $\lint$ satisfies the superadditivity property. Using a parallel argumentn, it is easy to show that $\ovint$ satisies the analogous \emph{subadditivity} property. And since $\lint=\ovint$ on the functions $f$, $g$, and $f+g$, we can put the two together to conclude the additivity property!
+
+  Finally for general measurable functions $f$ and $g$, we can always apply the truncation lemmas to replace $f$ and $g$ with bounded functions with bounded supports. Each truncation costs us an $\epsilon$ in the additivity property, but afterwards we can let $\epsilon\to0$ and obtain the desired result.
+\end{proof}
+
+Later we will show that the Lebesgue integral even satisfies countable additivity for nonnegative measurable functions.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lebesgue integration}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.3.4
+\end{reading}
+
+We have now defined and explored the Lebesgue integral for nonnegative functions. As previously explained, we will now proceed to extend this definition to signed and even complex-valued functions. Some care will of course be needed; to see this consider what would happen when trying to find the integral of $\sin(x)$ or of $1/x$ over the whole real line! In order to proceed, we will provide an assumption which guarantees that such issues will not occur.
+
+\begin{defn}
+  Let $f$ be a complex-valued measurable function on $\RR^d$ (it need only be defined almost everywhere). We say that $f$ is \emph{absolutely integrable}, or a member of $L^1$, if $\int|f|<\infty$.
+\end{defn}
+
+We can now define the Lebesgue integral for absolutely integrable functions $f$, by using the real, imaginary, positive, and negative parts.
+
+\begin{defn}
+  If $f$ is absolutely integrable and real-valued, let $\int f=\int f^+-\int f^-$. If $f$ is absoulutely integrable and complex-valued, let $\int f=\int\Re f+i\int\Im f$.
+\end{defn}
+
+Since $f^+,f^-\leq|f|$, the hypothesis of absolute integrability means that $\int f$ will not be an indeterminate expression. The definition of $\int f$ agrees with the nonnegative integral when both are defined.
+
+Functions which are not absolutely integrable include $\sin(x)$ and $1/x$, defined on all of $\RR$. Another interesting example is the function $f=(-1)^n/n\chi_{[n,n+1)}$. In some sense this integral ``should'' have value $\sum(-1)^n/n$, which is a convergent series. One may wish to define an improper integral which works for $f$, but it is difficult to do so without sacrificing some of the properties of the Lebesgue integral.
+
+Next, we consider some of the elementary properties of the absolutely convergent integral. Our first result states that the real-valued version of the absolutely convergent Lebesgue integral agrees with and extends the Riemann integral.
+
+%% monotonicity?
+
+%% next result: should be moved to the previous section, but then referenced in the next proposition as an inherited property
+
+\begin{prop}
+  Let $f\colon[a,b]\to\RR$ be a Riemann integrable function. Then intepreting $f$ as a function defined on all of $\RR$ which is zero outside of $[a,b]$, we have that $f$ is Lebesgue absolutely integrable with the same value.
+\end{prop}
+
+\begin{proof}
+  Let us first assume that $f$ is nonnegative. Then since pc functions are simple, we clearly have that the lower Darboux integral of $f$ is less than or equal to the lower Lebesgue integral of $f$. On the other hand by monotonicity the lower Lebesgue integral of $f$ is less than or equal to the upper Darboux integral of $f$. Since the lower and upper Darboux integrals are equal, we must have that it agrees with the Lebesgue integral of $f$.
+
+  If $f$ is real-valued, then we can write $\int f=\int f^+-\int f^-$, and this expression is valid for both the Darboux and absolutely convergent Lebesgue integrals. Applying the previous argument to both $f^+$ and $f^-$, we have the desired result.
+\end{proof}
+
+Next, the absolutely convergent Lebsegue integral of course inherits many of the properties of the nonnegative integral, and has some new ones too.
+
+\begin{prop}
+  \begin{enumerate}
+  \item (linearity) $\int(f+g)=\int f+\int g$, $\int cf=c\int f$, and $\int\bar f=\overline{\int f}$;
+  \item (triangle inequality for integrals) $\left|\int f\right|\leq\int|f|$.
+  \end{enumerate}
+\end{prop}
+
+\begin{proof}
+  The linearity properties are easily proved using the analogous property for the nonnegative integral. For example, if $f,g$ are real-valued and $h=f+g$, then $h^+-h^-=f^+-f^-+g^+-g^-$. Rearranging terms we have $f^-+g^-+h^+=f^++g^++h^-$. From the nonnegative linearity we know $\int f^-+\int g^-+\int h^+=\int f^++\int g^++\int h^-$. Rearranging back, we obtain $\int h=\int f+\int g$.
+
+  For the triangle inequality for integrals, first assume that $f$ is real-valued. Then we can write $f=f^+-f^-$ and $|f|=f^++f^-$. Thus using linearity together with the triangle inequality, we have
+  \begin{align*}
+    \left|\int f\right|&=\left|\int f^+-\int f^-\right|\\
+                       &\leq\int f^++\int f^-\\
+                       &=\int|f|
+  \end{align*}
+  Next if $f$ is complex-valued we can find an angle $\theta$ such that $e^{i\theta}\int f=\left|\int f\right|$. Again using linearity, together with the definition of the complex-valued integral, we have
+  \begin{align*}
+    \left|\int f\right|&=\Re\left|\int f\right|\\
+                       &=\Re e^{i\theta}\int f\\
+                       &=\int \Re e^{i\theta}f\\
+                       &\leq\int|f|
+  \end{align*}
+  The last inequality following from monotonicity, and gives the desired result.
+\end{proof}
+
+One of the most appreciable aspects of the theory of integration is that the class of absolutely integrable functions forms a vector space. Although the space is of course infinite dimensional, it has a substantial amount of structure! Recall that a nonnegative function $\|\cdot\|$ defined on a vector space is called a \emph{seminorm} if $\|v+w\|\leq\|v\|+\|w\|$, and $\|cv\|=|c|\|v\|$.
+
+\begin{prop}
+  The collection of absolutely integrable functions forms a vector space. In fact it is a seminormed vector space with the seminorm $\|f\|=\int|f|$.
+\end{prop}
+
+\begin{proof}
+  By the linearity shown above, the absolutely integrable functions are closed under linear combinations. To see that $\|\cdot\|$ is a seminorm, first note that the triangle inequality implies that $|f+g|\leq|f|+|g|$, and so monotonicity implies the first axiom. Last we have $|cf|=|c||f|$ and linearity implies the second axiom.
+\end{proof}
+
+A seminorm is called a \emph{norm} if it additionally satisfies $\|v\|=0\implies v=0$. If one is willing to \emph{identify} functions $f,g$ which agree almost everywhere as being equal, then the norm $\|f\|=\int|f|$ becomes a true norm. Indeed, it is an exercise to check that if $\int|f|=0$ then $f=0$ almost everywhere, and thus in this sense $f=0$.
+
+While the vector space of absolutely integrable functions is infinite dimensional, the next result shows that it is not too unwieldy topologically. Recall that a subset $D$ of a (semi-)normed vector space $V$ is \emph{dense} if for every $v\in V$ and every $\epsilon$ there exists $d\in D$ such that $\|v-d\|<\epsilon$.
+
+\begin{thm}
+  The following are all dense subsets of the space of absolutely integrable functions.
+  \begin{enumerate}
+  \item absolutely integrable simple functions;
+  \item absolutely integrable simple functions $\sum_1^kc_i\chi_{B_i}$ where $B_i$ are all boxes; and
+  \item continuous, compactly supported functions.
+  \end{enumerate}
+\end{thm}
+
+\begin{proof}
+  For part (a), first assume that $f$ is nonnegative. Then by the definition of the integral, we can find a simple function $g$ such that $g\leq f$ and $\int f-\int g<\epsilon$. It follows that $\int(f-g)<\epsilon$, and since $f-g$ is nonnegative, clearly $\int|f-g|<\epsilon$. It is easy to extend this argument to complex-valued functions using the standard technique.
+
+  For part (b), we now know it is sufficient to approximate any simple function by a function of this type. Using linearity, it is enough to approximate a single term $\chi_E$, with $m(E)<\infty$, by a function of this type. We have already seen that for any such $E$ there exists an elementary set $A$ such that $m(E\triangle A)<\epsilon$. This means that $\int|\chi_E-\chi_A|<\epsilon$, so the result follows.
+
+  For part (c), we now know it is sufficient to approximate any simple function $\chi_B$ by a function of this type. It is possible to do this explicity. For example in one dimension we have $B=I$ is an interval, and the step function $I$ can easily be approximated by a continuous function which looks like a trapezoid.
+\end{proof}
+
+We will see later that this density result fits in with several results which loosely state that integrable functions are ``almost continuous.''
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Convergence theorems}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.4.5, though assume all functions are defined on $\RR^d$.
+\end{reading}
+
+In the previous section we have seen that the Lebesgue integral satisfies all of the key properties that the Riemann integral does, while at the same time being able to integrate many more functions. But given that the Lebesgue measure enjoys much stronger properties than the Jordan measure does, it is natural to ask whether the Lebesgue integral does too.
+
+In order to find such strong properties, a good test question to ask is whether $f_n\to f$ implies $\int f_n\to f$. We saw that in the case of the Riemann integral, this does hold if $f_n,f$ are all defined on an interval and $f_n\to f$ uniformly. In the case of the Lebesgue integral, the same proof shows that it works when $f_n,f$ are all supported on a common set of finite measure, and $f_n\to f$ uniformly.
+
+But without these special hypotheses, such a convergence theorem can fail. So before looking for situations where it does hold, let us examine some of the examples where it does not.
+
+\begin{example}[Domain escape to infinity]
+  Let $f_n=\chi_{[n,n+1]}$ and $f=0$. That is, $f_n$ is a sequence of moving unit bumps. Then $f_n\to f$ pointwise (not uniformly), but we have $\int f_n=1$ for all $n$, and $\int f=0$.
+\end{example}
+
+\begin{example}[Domain width escape to infinity]
+  Let $f_n=\frac1n\chi_{[0,n]}$ and $f=0$. That is, $f_n$ is a sequence of widening and shortening bumps. Then $f_n\to f$ uniformly, but once again we have $\int f_n=1$ for all $n$, and $\int f=0$.
+\end{example}
+
+\begin{example}[Range escape to infinity]
+  Let $f_n=n\chi_{[1/n,2/n]}$ and $f=0$. That is, $f_n$ is a sequence of narrowing and tallening bumps. Then $f_n\to f$ pointwise (not uniformly), but once again we have $\int f_n=1$ for all $n$, and $\int f=0$.
+\end{example}
+
+One should observe that in all three of our examples where a convergence theorem fails, mass was destroyed in the limit. In particular, we do not have an example where new mass is created in the limit. The next result states that mass can only be destroyed, and never created.
+
+\begin{thm}[Fatou's lemma]
+  Let $f_n$ be nonnegative measurable functions. Then $\int\liminf f_n\leq\liminf\int f_n$. In particular, if $f_n\to f$ then $\int f\leq\liminf\int f_n$.
+\end{thm}
+
+We will prove Fatou's lemma shortly. Meanwhile, it tells us that so long as we can close off the avenues through which the mass of a region can escape to infinity, we can find a convergence theorem. The next theorem gives a very general and elegant way to prevent mass from escaping in a limit, namely, to make sure all functions involved are uniformly dominated by an absolutely integrable function.
+
+\begin{thm}[Dominated convergence theorem]
+  Let $f_n$ be a sequence of measurable complex-valued functions and suppose that $f_n\to f$. Suppose that there exists a nonnegative function $G$ such that $\int|G|<\infty$ and for all $n$, we have $|f_n|\leq G$. Then $\int f_n\to \int f$.
+\end{thm}
+
+Intuitively speaking, the function $G$ acts as an umbrella under which the convergence $f_n\to f$ occurs. The assumption that the umbrella covers just a finite amount of area guarantees that mass cannot escape! The following proof will be carried out under the assumption that Fatou's lemma is true.
+
+\begin{proof}[Proof of the dominated convergence theorem]
+  By separating $f_n$ and $f$ into their real and imaginary parts, we may assume that they are all real-valued. Thus our hypothesis says that $-G\leq f_n\leq G$. Since $f_n\to f$ we also have that $-G\leq f\leq G$. Now $f_n+G$ is nonnegative, so we can use Fatou's lemma to obtain:
+  \[\int f+G\leq\liminf\int f_n+G
+  \]
+  Similarly $G-f_n$ is nonnegative so we can again use Fatou's lemma to obtain:
+  \[\int G-f\leq\liminf\int G-f_n
+  \]
+  Putting the two equations together, we conclude that $\int f\leq\liminf\int f_n$ and $\int f\geq\limsup\int f_n$, and hence $\int f=\lim\int f_n$.
+\end{proof}
+
+It now remains to establish Fatou's lemma. As a first approximation, we will examine what happens in the special case that the functions $f_n$ are nonnegative and the sequence of $f_n$'s is monotone increasing in $n$.
+
+\begin{thm}[Monotone convergence theorem]
+  Let $f_n$ be a sequence of nonnegative measurable functions, and suppose that $f_n\leq f_{n+1}$ for all $n$. Let $f=\sup f_n$, so that we automatically have $f_n\to f$. Then $\int f_n\to\int f$.
+\end{thm}
+
+\begin{proof}
+  We first observe that if the $f_n$ were all characteristic functions, then this theorem would follow directly from the upwards monotone convergence theorem for Lebesgue measurable sets. Thus our strategy is to reduce to a situation in which we can apply the upwards monotone convergence theorem.
+
+  First, since $f_n\leq f_{n+1}$, by the montonicity of the integral we know that $\int f_n\leq\int f_{n+1}$. Siminarly since $f_n\leq f$ we know that $\int f_n\leq\int f$. It follows that the values $\int f_n$ converge and that $\lim\int f_n\leq\int f$.
+
+  To show that $\int f\leq\lim\int f_n$, it is sufficient to show that $\int g\leq \lim\int f_n$ for any simple function $g$ such that $g\leq f$. Given such a $g$, we can express it as $g=\sum c_i\chi_{E_i}$ where the $E_i$ are disjoint measurable sets. Using the range truncation lemma, we can suppose that $c_i\neq\infty$ for all $i$.
+
+  Now fix just one of the sets $E_i$ and let $\epsilon>0$ be given. We define the sets
+  \[A_n^i=\{x\in E_i\mid f_n(x)>(1-\epsilon)c_i\}
+  \]
+  so that we have $f_n>\sum(1-\epsilon)c_i\chi_{A_n^i}$. Now since $\lim f_n\geq g$, for all $x\in E_i$ for $n$ large enough we have that $f_n(x)>(1-\epsilon)c_i$. In other words, as $n\to\infty$ the $A_n^i$ increase to $E_i$. Now the upwards monotone convergence theorem for sets implies that as $n\to\infty$ we have $m(A_n^i)\to m(E_i)$.
+
+  Putting this all together, we have
+  \begin{align*}
+    \lim\int f_n&\geq\lim\int\sum(1-\epsilon)c_i\chi_{A_n^i}\\
+                &=\lim\sum (1-\epsilon)c_im(A_n^i)\\
+                &=\sum (1-\epsilon)c_im(E_i)\\
+                &=(1-\epsilon)\int g
+  \end{align*}
+  Taking $\epsilon\to0$ we therefore conclude that $\lim\int f_n\geq\int g$, as desired.  
+\end{proof}
+
+It is worth remarking that the monotone convergence theorem can fail for signed functions $f_n$. As a silly example, if $f_n=-1/n$ then $f_n\to0$, $\int f_n=-\infty$ but $\int f=0$. The monotone convergence theorem has the following easy but important consequence that the nonnegative Lebesgue integral is \emph{countably} linear, not just finitely linear!
+
+\begin{cor}[Tonelli's theorem]
+  If $f_n$ is a sequence of nonnegative measurable functions, then $\int\sum f_n=\sum\int f_n$.
+\end{cor}
+
+\begin{proof}
+  Using the monotone convergence theorem and then finite linearity, we have:
+  \begin{align*}
+    \int\sum f_n&=\int\lim\sum_1^Nf_n\\
+                &=\lim_N\int\sum_1^Nf_n\\
+                &=\lim_N\sum_1^N\int f_n\\
+                &=\sum\int f_n
+  \end{align*}
+  as desired.
+\end{proof}
+
+Next we use the very special monotone convergence theorem to establish Fatou's lemma, which we needed in the proof of the dominated convergence theorem.
+
+\begin{proof}[Proof of Fatou's lemma]
+  We will need the general fact that $\int\inf g_n\leq\inf\int g_n$. This holds simply because $\int\inf g_n\leq\int g_n$ for any particular $n$, and then one can take the $\inf_n$ over both sides.
+
+  Now recall that $\liminf f_n=\lim_N\inf_{n\geq N}f_n$. The functions $\inf_{n\geq N}f_n$ are increasing in $N$, so using the monotone convergence theorem together with the above we have
+  \begin{align*}
+    \int\liminf f_n&=\int\lim_N\inf_{n\geq N} f_n\\
+                    &=\lim_N\int\inf_{n\geq N}f_n\\
+                    &\leq\lim_N\inf_{n\geq N}\int f_n\\
+                    &=\liminf\int f_n
+  \end{align*}
+  as desired.
+\end{proof}
+
+We conclude with the following amusing application: the dominated convergence theorem implies that the harmonic series $\sum\frac1n$ diverges. To see this, suppose towards a contradiction that $\sum\frac1n<\infty$. Now the sequence of functions $f_n=\frac1n\chi_{[0,n]}$ described in the ``Escape to width infinity'' is dominated by the single function $G=\sum 1/n\chi_{[n-1,n)}$. Assuming $\sum\frac1n<\infty$ we would have that $G$ is absolutely integrable. Thus the dominated convergence theorem implies $\int f_n\to 0$, which contradicts that $\int f_n=1$!
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Abstract measure theory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.4.1--1.4.3
+\end{reading}
+
+The Lebesgue measure and integration theory that we have developed can be regarded as a model for an abstract concept of a measure and integral. The situation is very similar to other areas of mathematics. Consider the following examples of a concrete and abstract concept:
+\begin{itemize}
+\item the space $\RR^d$ with its distance measurement $\|x-y\|$ is a model for the definition of metric space;
+\item the space $\RR^d$ with its family of open sets is a model for the definition of topological space;
+\item the space $\RR$ with its addition and multiplication operations is a model for the definition of field;
+\item the space $\RR^d$ with its $\RR$-linear combinations is a model for the definiton of vector space.
+\end{itemize}
+
+An abstract measure function $\mu$ on a space $X$ will be one which satisfies the most fundamental properties that we have worked to prove for the Lebesgue measure. Of course the Lebesgue measure $m$ can only be applied to some of the subsets of $\RR^d$, so an abstract measure $\mu$ the can only be expected to be applied to some of the subsets of $X$. Thus we make the following definition of an abstract space replacing the role of $\RR^d$.
+
+\begin{defn}
+  A \emph{measurable space} is a pair $(X,\mathcal B)$ where $X$ is any set and $\mathcal B$ is a \emph{$\sigma$-algebra} on $X$: a collection of subsets of $X$ which contains the sets $\emptyset$ and $X$, and is closed under countable intersections, countable unions, and complements.
+\end{defn}
+
+Before getting further into the details of abstract measurable spaces and abstract measures, we recapitulate our development of the elementary, Jordan, and Lebesgue measures in an abstract setting.
+
+\begin{defn}
+  A \emph{Boolean algebra} on $X$ is a collection of subsets of $X$ which contains the sets $\emptyset$, and $X$, and is closed under pairwise intersections, pairwise unions, and complements.
+\end{defn}
+
+We have essentially seen several key examples of Boolean algebras on $\RR^d$: the collection of elementary sets together with their complements, and the collection of Jordan measurable sets together with their complements. If $X$ is any set we can always discuss the trivial Boolean algebra $\{\emptyset,X\}$ and the maximal Boolean algebra $\mathcal P(X)$.
+
+\begin{defn}
+  Suppose $X$ is a set and $\mathcal A$ is a Boolean algebra on $X$. A function $\mu\colon\mathcal A\to[0,\infty]$ is said to be a \emph{finitely additive measure} if it satisfies
+  \begin{enumerate}
+  \item (empty set) $\mu(\emptyset)=0$; and
+  \item (finite additivity) for all disjoint sets $A,B\in\mathcal A$, we have $\mu(A\cup B)=\mu(A)+\mu(B)$.
+  \end{enumerate}
+\end{defn}
+
+The elementary measure is an example of a finitely additive measure, provided we take its value to be $\infty$ on any set which is the complement of an elementary set. A similar statement holds for the Jordan measure. But there are many other examples of finitely additive measures. For a simple example let $X$ be any set, and $\mathcal A$ the Boolean algebra of all finite or cofinite subsets of $X$. Then we can define a finitely additive measure by $\mu(A)=|A|$, the cardinality of $A$.
+
+The two simple axioms above imply several further properties.
+
+\begin{prop}
+  Suppose that $\mathcal A$ is a Boolean algebra on $X$, and $\mu$ is a finitely additive measure on $\mathcal A$. Then if $A,B\in\mathcal A$ we have:
+  \begin{itemize}
+  \item (monotonicity) if $A\subset B$ then $\mu(A)\leq\mu(B)$;
+  \item (finite subadditivity) $\mu(A\cup B)\leq\mu(A)+\mu(B)$; and
+  \item (inclusion--exclusion) $\mu(A\cup B)+\mu(A\cap B)=\mu(A)+\mu(B)$.
+  \end{itemize}
+\end{prop}
+
+We now move on to the stronger properties enjoyed by Lebesgue measurable sets and Lebesgue measure. As we have already said, the Lebesgue measurable sets are not just a Boolean algebra but a $\sigma$-algebra. This makes $\RR^d$ together with the Lebesgue measurable sets into a measurable space. 
+
+For more examples of a measurable space, if $X$ is any set then we can always let $\mathcal F$ be the collection of all countable or co-countable subsets of $X$. Next if $X$ is any topological space then it can be viewed as a measurable space by taking its $\sigma$-algebra to be the collection of Borel subsets of $X$: A set is said to be Borel if it is constructible from the open sets using countable intersections, countable unions, and complements.
+
+\begin{defn}
+  Suppose $X$ is a set and $\mathcal B$ is a $\sigma$-algebra on $X$. A function $\mu\colon\mathcal B\to[0,\infty]$ is said to be a \emph{measure} if it satisfies
+  \begin{enumerate}
+  \item (empty set) $\mu(\emptyset)=0$; and
+  \item (countable additivity) for every sequence of pairwise disjoint sets $A_i\in\mathcal B$, we have $\mu(\bigcup A_i)=\sum(\mu(A_i))$.
+  \end{enumerate}
+\end{defn}
+
+The only example of a measure that we have seen so far is the Lebesgue measure on $\RR^d$. One further example is the cardinality measure $\mu(A)=|A|$ on any set. Another very simple example is the Dirac measure: if $x\in X$ we can define $\mu_x(A)=1$ if $x\in A$ and $=0$ if $x\notin A$. It is also worth noting that given several measures $\mu_i$ on a common $\sigma$-algebra, we can form new measures using linear combinations. That is, the measure $\mu=\sum c_i\mu_i$ is defined by $\mu(A)=\sum c_i\mu_i(A)$.
+
+A measure enjoys all the properties of a finitely additive measure, as well as many more. Each of the following can be established using our proofs in the case of Lebesgue measure.
+
+\begin{prop}
+  Suppose that $\mathcal B$ is a $\sigma$-algebra on $X$, and $\mu$ is a measure on $\mathcal B$. Then if $A_i\in\mathcal B$, we have:
+  \begin{itemize}
+  \item (countable subadditivity) $\mu(\bigcup A_i)\leq\sum\mu(A_i)$;
+  \item (upwards monotone convergence) if $A_i\subset A_{i+1}$ then $\mu(\bigcup A_i)=\lim\mu(A_i)$; and
+  \item (downwards monotone convergence) if $A_i\subset A_{i+1}$ and $\mu(A_1)<\infty$ then $\mu(\bigcap A_i)=\lim\mu(A_i)$.
+  \end{itemize}
+\end{prop}
+
+One further property which the Lebesgue measure had by definition is that subsets of null sets were null. This property does not follow directly from the axioms of a measure, and instead must be made into an additional axiom. We say that a $\sigma$-algebra $\mathcal B$ is \emph{complete} if whenever $A\in\mathcal B$ and $A'\subset A$ then $A'\subset\mathcal B$. We also say that measure $\mu$ is \emph{complete} if it is defined on a complete $\sigma$-algebra. It is an exercise to check that if $\mu$ is a measure, then it can always be extended to a complete measure.
+
+At this point we have only given very trivial examples of measure, besides the Lebesgue measure. Given the effort we invested into finding the right construction of the Lebesgue measure, it may not surprise you to know that it is difficult to construct interesting examples of measures. In fact there is a very general and powerful method for constructing measures. The basic idea behind it is that it is easy to construct finitely additive measures first. Unfortunately not all finitely additive measures give rise to true measures, necessitating the following definition.
+
+\begin{defn}
+  Let $X$ be any set, $\mathcal A$ a boolean algebra on $X$, and $\mu_0$ a finitely additive measure on $\mathcal A$. Then $\mu_0$ is said to be a \emph{premeasure} if it satisfies the additional axiom:
+  \begin{itemize}
+  \item for every sequence of pairwise disjoint sets $A_i\in\mathcal A$, if $\bigcup A_i\in\mathcal A$, then $\mu_0(\bigcup A_i)=\sum\mu(A_i)$.
+  \end{itemize}
+\end{defn}
+
+The condition does not quite say that $\mu_0$ is countably additive, but rather that it has the potential to be countably additive. This is confirmed by the following keystone result of the subject, which we will prove in the next section.
+
+\begin{thm}[Carath\'eodory's extension theorem]
+  Let $X$ be a set, $\mathcal A$ an algebra on $X$, and $\mu_0$ a premeasure on $\mathcal A$. Let $\mathcal B$ be the $\sigma$-algebra generated by $\mathcal A$. Then $\mu_0$ extends to a measure $\mu$ on $\mathcal B$.
+\end{thm}
+
+The idea behind the proof is to use an analog of our construction of the Lebesgue outer measure $m^*$. First we define the notion of an abstract outer measure.
+
+\begin{defn}
+  Let $X$ be any set and $\mu^*$ a function on all subsets of $X$. Then $\mu^*$ is said to be a \emph{outer measure} if it satisfies
+  \begin{enumerate}
+  \item (empty set) $\mu^*(\emptyset)=0$;
+  \item (monotonicity) if $E\subset F$ then $\mu^*(E)\leq\mu^*(F)$; and
+  \item (countable subadditivity) $\mu^*(\bigcup E_i)\leq\sum\mu^*(E_i)$.
+  \end{enumerate}
+\end{defn}
+
+If $\mathcal A$ is an algebra on $X$, and $\mu_0$ is any function on $\mathcal A$ which satisfies the empty set axiom, then we can define
+\begin{equation}
+  \label{eq:outer}
+  \mu^*(E)=\inf\left\{\left.\sum\mu_0(A_i)\;\right|\;A_i\in\mathcal A,\text{ and }E\subset\bigcup A_i\right\}
+\end{equation}
+
+\begin{prop}
+  If $\mu^*$ is constructed as in Equation~\eqref{eq:outer}, then $\mu^*$ is an outer measure.
+\end{prop}
+
+\begin{proof}
+  The empty set and monotonicity axioms are clear from the definition. For countable subadditivity, let $E_i$ be given and $\epsilon>0$. Then for every $i$ there exists a sequence of $A_i^n$ such that $E_i\subset A_i^n$ and $\sum_n\mu_0(A_i^n)-\mu^*(E_i)<\epsilon/2^i$. It follows that $\bigcup E_i\subset\bigcup_{i,n} A_i^n$ and $\sum_{n.i}\mu(A_i^n)-\sum\mu^*(E_i)\leq\epsilon$. Therefore we have $\mu^*(\bigcup E_i)-\sum(\mu^*(E_i))\leq\epsilon$. Taking $\epsilon\to0$ the proof is complete.
+\end{proof}
+
+Recall that after we constructed Lebesgue outer measure $m^*$ we defined the collection of $m^*$-measurable sets as those which could be approximated well by open sets. If $X$ is just a set with an algebra or $\sigma$-algebra, we can't refer to the open sets. Thus to prove Carath\'eodory's extension theorem, it remains to show how to identify the collection of $\mu^*$-measurable sets. We will investigate this in the next section, as well as some applications of the extension theorem.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Construction of abstract measures}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.7
+\end{reading}
+
+In the previous section, we showed how to abstract the properties of the elementary measure to a finitely additive measure, and how to abstract the properties of the Lebesgue outer measure too. What we lacked was a definition of measurability, which in the Lebesgue case relied on the open sets of $\RR^d$. For a general measure space, we use the following much more subtle definition.
+
+\begin{defn}
+  Suppose that $X$ is any set and $\mu^*$ is an outer measure on $X$. Then a subset $E\subset X$ is said to be \emph{$\mu^*$-measurable} if for every subset $S\subset X$ we have
+  \[\mu^*(S)=\mu^*(S\cap E)+\mu^*(S\setminus E)
+  \]
+\end{defn}
+
+To put this definition in context, it is an exercise to show that this property holds for Lebesgue measurable sets. Moreover it is this property that can be used to prove that a bounded set is Lebesgue measurable if and only if its inner and outer measures agree.
+
+The next result shows that the $\mu^*$-measurable sets are a good choice, in the sense that they are plentiful and that $\mu^*$ behaves well on its measurable sets.
+
+\begin{thm}
+  If $\mu^*$ is an outer measure on $X$, then the $\mu^*$-measurable subsets of $X$ form a $\sigma$-algebra, and $\mu^*$ is a measure when restricted to the $\mu^*$-measurable sets.
+\end{thm}
+
+\begin{proof}
+  We first show that the collection of $\mu^*$-measurable sets is an algebra. It is clear that a set $E$ is $\mu^*$-measurable if and only if $E^c$ is $\mu^*$-measurable.
+
+  We next show that the $\mu^*$-measurable sets are closed under pairwise unions. Suppose that $E,F$ are $\mu^*$-measurable. Since we have already proved $\mu^*$ is subadditive for arbitrary sets, it suffices to prove that for any set $S$ we have
+  \[\mu^*(S)\geq\mu^*(S\cap(E\cup F))+\mu^*(S\setminus(E\cup F))
+  \]
+  To achieve this, we expand the right-hand side and then apply the measurability of $F$ followed by the measurability of $E$:
+  \begin{align*}
+    &\mu^*(S\cap(E\cup F))+\mu^*(S\cap(E\cup F)^c)\\
+    &\leq \mu^*(S\cap E\cap F^c)+\mu^*(S\cap E\cap F)+\mu^*(S\cap E^c\cap F)+\mu^*(S\cap E^c\cap F^c)\\
+    &=\mu^*(S\cap E)+\mu^*(S\cap E^c)\\
+    &=\mu(S)
+  \end{align*}
+  
+  Third we show that $\mu^*$ is finitely additive on the $\mu^*$-measurable sets. Suppose that $E,F$ are disjoint and $\mu^*$-measurable. Then using the measurability of $E$, we have
+  \begin{align*}
+    \mu^*(E\cup F)&=\mu^*((E\cup F)\cap E)+\mu^*((E\cup F)\setminus E)\\
+                  &=\mu^*(E)+\mu^*(F)
+  \end{align*}
+
+  Finally we show that the $\mu^*$-measurable sets form a $\sigma$-algebra and that $\mu^*$ is countably additive on the $\mu^*$-measurable sets. Let $E_i$ be a sequence of $\mu^*$-measurable sets. Since the $\mu^*$-measurable sets form an algebra, we can assume without loss of generality that the $E_i$ are pairwise disjoint. Then using the argument of the previous paragraph, for any set $S$ we have $\mu^*(S\cap\bigcup_1^nE_i)=\sum_1^n\mu^*(S\cap E_i)$. It follows that
+  \begin{align*}
+    \mu^*(S)&=\mu^*(S\cap\bigcup_1^nE_i)+\mu^*(S\setminus\bigcup_1^nE_i)\\
+            &\geq\sum_1^n\mu^*(S\cap E_i)+\mu^*(S\setminus\bigcup E_i)
+  \end{align*}
+  Taking $n\to\infty$, we obtain
+  \begin{align*}
+    \mu^*(S)&\geq\sum\mu^*(S\cap E_i)+\mu^*(S\setminus\bigcup E_i)\\
+            &\geq\mu^*(\bigcup S\cap E_i)+\mu^*(S\setminus\bigcup E_i)\\
+            &=\mu^*(S\cap\bigcup E_i)+\mu^*(S\setminus\bigcup E_i)
+  \end{align*}
+  Thus we have shown that $\bigcup E_i$ is $\mu^*$-measurable.
+
+  Moreover if we take $S=\bigcup E_i$ in the above, we obtain that $\mu^*(\bigcup E_i)\geq\sum(\mu^*(E_i))$, which shows that $\mu^*$ is countably additive as desired.
+\end{proof}
+
+Now we return to the motivational context where the outer measure $\mu^*$ is constructed from a finitely additive measure $\mu_0$, as was done for Lebesgue measure. In this case, provided the finitely additive measure $\mu_0$ was in fact a premeasure, $\mu^*$ will be the desired Carath\'eodory extension of $\mu_0$.
+
+\begin{thm}
+  Let $\mathcal B_0$ is a Boolean algebra on $X$, and $\mu_0$ a premeasure on $\mathcal B_0$. Let $\mu^*$ be the outer measure induced by $\mu_0$ according to Equation~\eqref{eq:outer} and $\mathcal B$ the $\sigma$-algebra of $\mu^*$-measurable sets. Then $\mathcal B$ is an extension of $\mathcal B_0$, and $\mu^*$ is an extension of $\mu_0$.
+\end{thm}
+
+\begin{proof}
+  We first show that if  $E$ lies in $\mathcal B_0$ then $E$ is $\mu^*$-measurable. For this, let $S$ be an arbitrary set and find sets $A_i\in\mathcal B_0$ such that $S\subset\bigcup A_i$ and $\mu^*(S)-\sum\mu_0(A_i)<\epsilon$. Then
+  \begin{align*}
+    \mu^*(S\cap E)+\mu^*(S\setminus E)&\leq\sum\mu_0(A_i\cap E)
+                                        +\sum\mu_0(A_i\setminus E)\\
+                                      &=\sum\mu_0(E_n)\\
+                                      &<\mu^*(S)+\epsilon
+  \end{align*}
+  Taking $\epsilon\to0$, we conclude that $E$ is $\mu^*$-measurable.
+
+  Next we show that if $E$ lies in $\mathcal B_0$ then $\mu^*(E)=\mu_0(E)$. It is clear from the definition that $\mu^*(E)\leq\mu_0(E)$. To show that $\mu_0(E)\leq\mu^*(E)$, let $A_i\in\mathcal B_0$ be such that $E\subset\bigcup A_i$. We can assume without loss of generality that the $A_i$ are pairwise disjoint. Then using the axiom of a premeasure, we obtain
+  \begin{align*}
+    \mu_0(E)&=\sum\mu_0(E\cap A_i)\\
+            &\leq\sum\mu_0(A_i)
+  \end{align*}
+  Taking the infemum over all such sequences $A_i$, we conclude that $\mu_0(E)\leq\mu^*(E)$, as desired.
+\end{proof}
+
+This concludes our proof of Carath\'eodory's extension theorem. As an application, we will now show how to produce a family of interesting measures on the real line, beyond just the Lebesgue measures.
+
+\begin{defn}
+  An interval is said to be \emph{half-open} if it is of the form $(a,b]$ where $a\in[-\infty,\infty)$ and $b\in\RR$, or else of the form $(a,\infty)$. We let $\mathcal H$ denote the Boolean algebra generated by the half-open intervals.
+\end{defn}
+
+It is easy to see that $\mathcal H$ consists of finite disjoint unions of half-open intervals. The $\sigma$-aglebra generated by $\mathcal H$ is exactly the $\sigma$-algebra of Borel subsets of $\RR$. If $F\colon\RR\to\RR$ is an increasing, right-continuous function, then we can define a measuring function on $\mathcal H$ by letting $\mu_F((a,b])=F(b)-F(a)$, and extending $\mu_F$ to disjoint unions in the obvious way.
+
+\begin{thm}
+  For any increasing, right-continuous function $F$, $\mu_F$ is a premeasure on $\mathcal H$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+  It is not difficult to see that $\mu_F$ is well-defined on $\mathcal H$. Moreover $\mu_F$ is finitely additive by construction.
+
+  Thus it remains only to show that $\mu_F$ satisfies the axiom of a premeasure. Suppose that $E_i\in\mathcal H$ and that $\bigcup E_i\in\mathcal H$ too. We can assume without loss of generality that $E_I$ are each single half-open intervals, and that $\bigcup E_i$ is a single half-open interval $I$.
+
+  It is clear from monotonicity that $\mu_F(\bigcup E_i)\geq\sum\mu_F(E_i)$, so it suffices to show that $\mu_F(\bigcup E_i)\leq\sum\mu_F(E_i)$. In order to achieve this, let us define $\mu_F$ on open intervals by letting $\mu_F((a,b))=\lim_{x\to b^-}F(x)-F(a)$, and similarly for closed intervals. Then using the right-continuity of $F$, we can pay the $\epsilon$ price to replace each $E_i$ with an open $U_i$ with $E_i\subset U_i$ and replace $I$ with a compact $K$ with $K\subset I$.
+
+  Then by the Heine--Borel theorem, just finitely many of the $U_i$ suffice to cover $K$, and hence $\mu_F(K)\leq\sum\mu_F(U_i)$. It follows that $\mu_F(\bigcup E_i)\leq\sum\mu_F(E_i)-\epsilon$, and the result follows by taking $\epsilon\to0$.
+\end{proof}
+
+If $F(x)=x$, then the above construction simply gives $\mu_F=$ the Lebesgue measure $m$. And in general, $F$ acts as the cumulative density of the measure $\mu_F$. Measures of this form are called \emph{Lebesgue-Stieltjes measures}.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Abstract integration theory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  Tao, \S 1.4.4
+\end{reading}
+
+In the past several sections we have explained in detail how the theory of the Lebesgue measure on $\RR^d$ can be abstracted to yield a theory of abstract measures on abstract measurable spaces. In this section we give a brief tour of how the theory can also be used to describe abstract measurable functions, and to carry out integration with respect to arbitrary measures.
+
+Although the definition of measurable functions has many equivalent formulations, our official definition will be the following ``pre-image'' version.
+
+\begin{defn}
+  Suppose that $(X,\mathcal B)$ is a measurable space. A function $f$ which maps $X$ to $[0,\infty]$, $\RR$, or $CC$ is called \emph{measurable} if the pre-image of any open set is in $\mathcal B$, that is, for every open subset $U$ of the codomain, $f^{-1}(U)\in\mathcal B$.
+\end{defn}
+
+\begin{prop}
+  The measurable functions on $(X,\mathcal B)$ are closed under sums, products, continuous compositions, and pointwise limits.
+\end{prop}
+
+We next turn to the task of defining integration with respect to an abstract measure $\mu$. Intuitively $\mu$ is a distribution or density on the space $X$, and $\int f\,d\mu$ is a weighted, continuous sum. For example if $\mu$ is a probability on a probability space, and $f$ is a random variable, then $\int f\,d\mu$ denotes the expectation of $f$.
+
+In order to define the integral with respect to $\mu$, we mimic our original strategy and begin with simple functions.
+
+\begin{defn}
+  Let $(X,\mathcal B)$ be a measurable space. A measurable function $f\colon X\to[0,\infty]$ is said to be \emph{simple} if it takes finitely many values, that is, if $f=\sum_1^kc_i\chi_{E_i}$ where $E_i\in\mathcal B$.
+
+  If $f$ is a simple function and $\mu$ is a measure on $(X,\mathcal B)$, then we define the \emph{simple integral} of $f$ with respect to $\mu$ by
+  \[\sint f\,d\mu=\sum_1^kc_i\mu(A_i)
+  \]
+\end{defn}
+
+It is possible to check, as we have done in the case of Lebesgue integration, that the simple integral is well-defined, linear, and has numerous other familiar properties.
+
+\begin{defn}
+  Suppose $(X,\mathcal B)$ is a measurable space, and $\mu$ is a measure on it. If $f\colon X\to[0,\infty]$ is measurable, then we define the \emph{integral of $f$ with respect to $\mu$} by
+  \[\int f\,d\mu=\sup\left\{\left.\sint g\,d\mu\;\right|\;g\leq f\text{, $g$ simple}\right\}
+  \]
+\end{defn}
+
+It is not difficult to establish most of the basic properties of measurable functions previously stated in the Lebesgue case.
+
+\begin{prop}
+  The integral of nonnegative measurable functions satisfies the following properties
+  \begin{itemize}
+  \item (equivalence) if $f=g$ almost everywhere then $\int f\,d\mu=\int g\,d\mu$;
+  \item (monotonicity) if $f\leq g$ almost everywhere then $\int f\,d\mu\leq\int g\,d\mu$;
+  \item (range truncation) if $f^N=\min(f,N)$ then $\int f^N\,d\mu\to\int f\,d\mu$; and
+  \item (domain truncation) if $E_n$ is a sequence of measurable sets such that $E_n\subset E_{n+1}$ and $\bigcup E_n=X$, then $\int f\chi_{E_n}\,d\mu\to\int f\,d\mu$.
+  \item (Markov's inequality) if $f$ is measurable, then $\mu(\{x\mid f(x)\geq\lambda\})\leq\frac1\lambda\int f\,d\mu$;
+  \item (additivity) $\int(f+g)\,d\mu=\int f\,d\mu+\int g\,d\mu$;
+  \end{itemize}
+\end{prop}
+
+\begin{proof}
+  All of the properties (a)--(d) can be proved in a fashion similar to the case of the Lebesgue integral.
+
+  The same is true of property (e), but we neglected to state it earlier so let us provide the proof now. Let $g=\lambda\chi_{\{x\mid f(x)\geq\lambda\}}$. Then clearly $g$ is a simple function and $g\leq f$. It follows that the simple integral of $g$ is a lower bound for the integral of $f$, so $\lambda\mu(\{x\mid f(x)\geq\lambda\})\leq\int f\,d\mu$, as desired.
+
+  The proof of additivity is similar to the Lebesgue case, with one wrinkle. Recall that in the Lebesgue proof we applied the truncation lemma to the sets $B(0,r)$ to assume without loss of generality that $f,g$ have finite measure support. One cannot assume that $X$ is a union of countably many sets of finite measure. Instead we let $E_n=\{x\mid f(x)>\frac1n\text{ or }g(x)>\frac1n\}$. This family of sets is increasing and the union contains the supports of $f$ and $g$. By Markov's inequality, the sets $E_n$ have finite measure, and the proof can proceed by truncating to these sets.
+\end{proof}
+
+Now that the integral of nonnegative functions has been defined, we may again define the absolutely convergent Lebesgue integral for complex-valued functions.
+
+\begin{defn}
+  Suppose that $(X,\mathcal B)$ is a measurable space and $\mu$ is a measure on it. If $f\colon X\to\CC$ is measurable and defined $\mu$-almost everywhere, we say that $f$ is \emph{absolutely integrable with respect to $\mu$} if $\int|f|\,d\mu<\infty$.
+
+  In this case, we define $\int f\,d\mu=\int\Re f\,d\mu+i\int\Im f\,d\mu$, where for real-valued functions $f$ we define $\int f\,d\mu=\int f^+\,d\mu-\int f^-\,d\mu$.
+\end{defn}
+
+Once again, if $(X,\mathcal B)$ is a measurable space and $\mu$ is a measure on it, we can define $L^1(\mu)$ to be the space of measurable complex-valued functions on $X$, where two such functions are identified if they agree $\mu$-almost everywhere. We can also define a norm on the space $L^1(\mu)$ by $\|f\|=\int|f|\,d\mu$. The following result follows using the same proof as before.
+
+\begin{prop}
+  The space $L^1(\mu)$ together with the norm $\|\cdot\|$ is a normed vector space.
+\end{prop}
+
+Finally we remark that our major convergence theorems all hold true for integration with respect to an abstract measure $\mu$. These include the monotone convergence theorem, Tonelli's theorem, Fatou's lemma, and the dominated convergence theorem.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Functional analysis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Normed vector spaces}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 12.1, \S 12.3
+\end{reading}
+
+In our study of integration theory, we studied several classes of real and complex-valued functions. For example we studied the class of measurable functions, and given $\mu$ the class of absolutely integrable functions. Across analysis there are many other important classes of functions, including the continuous functions, uniformly continuous functions, differentiable functions, and so on.
+
+Such function spaces have a lot of structure. For example one can usually add and scale such functions, making them into a vector space. One can also often measure the distance between two functions, giving the vector space a geometry. In the best cases, this distance makes the function space into a normed vector space.
+
+\begin{defn}
+  A \emph{normed vector space} consists of a (real or complex) vector space $X$ together with a mapping $\|\cdot\|\colon X\to[0,\infty)$ satisfying:
+  \begin{itemize}
+  \item (homogeneity) $\|ax\|=|a|\cdot\|x\|$;
+  \item (triangle inequality) $\|x+y\|\leq\|x\|+\|y\|$; and
+  \item (non-vanishing) $\|x\|=0$ implies $x=0$.
+  \end{itemize}
+  The mapping $\|\cdot\|$ is called a \emph{norm} on $X$.
+\end{defn}
+
+The norm gives rise to a metric on $X$ defined by $d(x,y)=\|x-y\|$. The metric has several special properties not true in a general metric space. For example, it is uniform throughout the space in the sense that it is translation invariant: $d(x+z,y+z)=d(x,y)$.
+
+\begin{defn}
+  A vector space $X$ equipped with a norm $\|\cdot\|$ is called a \emph{Banach space} if the associated metric is complete.
+\end{defn}
+
+Recall that a metric $d$ is \emph{complete} if whenever $x_n$ is Cauchy:
+\[(\forall\epsilon>0)(\exists N)(\forall n,m\geq N)\;d(x_n,x_m)<\epsilon
+\]
+then there exists $x\in X$ such that $x_n$ converges to $x$:
+\[(\forall\epsilon>0)(\exists N)(\forall n\geq N)\;d(x_n,x)<\epsilon
+\]
+The property means that there are no holes in the space---any point which can be approximated actually exists. We will see the value of the completeness assumption in later sections.
+
+We now describe several familiar examples of normed vector spaces (in fact most of them will be Banach spaces).
+
+\begin{example}
+  The ordinary finite-dimensional vector space $\RR^d$ is a Banach space together with its usual Euclidean norm $\|x\|=\left(\sum_1^dx_i^2\right)^{1/2}$. It is a classical annoying exercise to establish the triangle inequality. One can also verify that the completeness property holds, using the classical fact/construction that it is true for $\RR$.
+\end{example}
+
+\begin{example}
+  The space $\RR^\NN$ consisting of all real sequences will not be a Banach space in any reasonable way. However it does contain many classical Banach spaces. For example we can consider the space of all square summable sequences
+  \[\ell^2=\set{x\in\RR^\NN\mid\sum x_i^2<\infty}
+  \]
+  This is a Banach space with its generalized Euclidean norm $\|x\|_2=\left(\sum x_i^2\right)^{1/2}$. It is not all that easy to verify that $\ell^2$ is a Banach space and $\|\cdot\|_2$ is a complete norm on it. We will do this later!
+\end{example}
+
+\begin{example}
+  As we have mentioned, spaces of integrable functions may also form Banach spaces. Let $(X,\mathcal B)$ be a measurable space and $\mu$ a measure on $\mathcal B$. We have already described the space $L^1(\mu)$ of all absolutely integrable functions on $X$. It is also possible to use other powers, for example, let
+  \[L^2(\mu)=\set{f\colon X\to\CC\mid \int|f|^2\,d\mu<\infty}
+  \]
+  We may then define a norm on $L^2$ be $\|f\|_2=\left(\int|f|^2\right)^{1/2}$. The spaces $L^1(\mu)$ and $L^2(\mu)$ are not quite Banach spaces, but only because they fail to satisfy the non-vanishing property. This can easily be remedied by identifying two functions if they agree almost everywhere.
+\end{example}
+
+\begin{example}
+  As a final series of examples, if $[a,b]$ is any closed, bounded interval then let $M[a,b]$ be the space of all bounded functions $f\colon[a,b]\to\RR$ together with the supremum norm $\|f\|=\sup\set{f(x)\mid x\in[a,b]}$. This is a Banach space which contains many other spaces of independent interest. For example it contains the space $C[a,b]$ of continuous functions on $[a,b]$, the space $D[a,b]$ of all differentiable functions on $[a,b]$, and the space $P[a,b]$ of all polynomial functions on $[a,b]$. The last two turn out to be incomplete.
+\end{example}
+
+Having given the definition and basic examples of Banach spaces, we now briefly study mappings between them. For ordinary vector spaces, the most natural mappings are the \emph{operators}, or linear mappings. For Banach spaces we primarily study operators which are also continuous.
+
+The motivating examples are the operators from $\CC^n$ to $\CC^m$, which are simply the familiar matrix transformations studied in linear algebra. However these examples are somewhat misleading as it turns out they are always continuous, no matter what norm is chosen for $\CC^n$ or $\CC^m$.
+
+Another example of a linear operator is the mapping $L^1(\mu)\to\CC$ given by $f\mapsto\int f\,d\mu$. We have of course seen that the mapping is linear, and it turns out to be continuous as well.
+
+As a final example, the mapping from $D[a,b]$ to $M[a,b]$ which takes a differentiable function to its derivative is also linear. However it fails to be continuous with respect to the supremum norm. Two functions can be very close together but also have very different slopes!
+
+In the next two results, we show that the continuity of operators is very special when compared with arbitrary continuous functions.
+
+\begin{lem}
+  Let $X,Y$ be normed vector spaces and let $T\colon X\to Y$ be an operator. If $T$ is continuous at one point $x\in X$, then $T$ is uniformly continuous.
+\end{lem}
+
+\begin{proof}
+  Using the translation-invariance property, we can assume that $x=0$. By definition this means that for all $\epsilon>0$ there exists $\delta>0$ such that for all $x\in X$ we have $\|x\|<\delta\implies\|Tx\|<\epsilon$. Given two points $x,x'$ we can apply the latter property to $x-x'$ and use the linearity of $T$ to conclude that $\|x-x'\|<\delta\implies\|Tx-Tx'\|<\epsilon$. In other words, $T$ is uniformly continuous.
+\end{proof}
+
+In the following lemma, an operator $T\colon X\to Y$ is said to be \emph{bounded} if there exists a real number $M$ such that $\|Tx\|\leq M\|x\|$ for all $x\in X$. Note the abuse of terminology! A bounded operator is not bounded in the traditional sense that it takes values inside a bounded ball. Rather a bounded operator is one which \emph{maps bounded sets to bounded sets}.
+
+\begin{lem}
+  Let $X,Y$ be normed vector spaces and let $T\colon X\to Y$ be an operator. Then $T$ is continuous if and only if $T$ is bounded.
+\end{lem}
+
+\begin{proof}
+  First suppose that $T$ is continous. Apply the continuity with $\epsilon=1$ to obtain $\delta>0$ such that $\|x\|<\delta\implies\|Tx\|<1$. The for any $x\neq0$ we have
+  \[\|Tx\|=\left\|T\left(\frac{x}{\|x\|}\delta\right)\right\|\frac{\|x\|}{\delta}\leq 1\frac{\|x\|}{\delta}
+  \]
+
+  Conversely suppose that $T$ is bounded, and let $M$ be such that $\|Tx\|\leq M\|x\|$ for $x\in X$. Given any $\epsilon>0$ we let $\delta=\epsilon/M$. Then we have
+  \[\|x\|<\delta\implies\|Tx\|\leq M\|x\|<M\left(\frac{\epsilon}{M}\right)=\epsilon
+  \]
+  This shows that $T$ is continuous at the point $0$, and hence by the previous lemma $T$ is continuous.
+\end{proof}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{The Hahn--Banach theorem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 1.5
+\end{reading}
+
+In this section we continue our study of operators on a space $X$. However we confine our attention to the simplest operators, which are the one that take values in the scalar field $\RR$ or $\CC$. Such operators are so fundamental that we give them the special name ``functional''. In this section we consider only the case of real normed vector spaces, but the same results hold for complex spaces too.
+
+\begin{defn}
+  If $X$ is a normed vector space, a \emph{linear functional} on $X$ is an operator $\phi\colon X\to\RR$. A \emph{bounded linear functional} on $X$ is a bounded, which is to say continuous, linear functional $X$.
+\end{defn}
+
+Let us briefly recall the situation for $X=\RR^d$ with any of its norms. Here a linear functional $\phi$ is determined by its values on a basis, and it follows that $\phi$ is of the form $\mathbf{x}\mapsto\mathbf{y}^T\mathbf{x}$, that is, the dot product with a row vector or ``dual vector''. It should not be surprising that these mappings are always bounded, regardless of the norm on $\RR^d$.
+
+When $X$ is an infinite-dimensional normed vector space, it is not true that all linear functionals on $X$ are bounded. In fact it is not immediately obvious that there are any bounded linear functionals on an arbitrary space $X$. In the rest of this section we present the Hahn--Banach theorem, which implies that every normed vector space $X$ has plenty of bounded linear functionals.
+
+In order to state the Hahn--Banach theorem in its most powerful form, we need the following generalization of a norm on a vector space.
+
+\begin{defn}
+  Let $X$ be a vector space. A \emph{sublinear functional} on $X$ is a function $p\colon X\to\RR$ that satisfies:
+  \begin{enumerate}
+  \item (positive homogeneity) $p(cx)=cp(x)$ for all $c\geq0$; and
+  \item (subbativity) $p(x+y)\leq p(x)+p(y)$.
+  \end{enumerate}
+\end{defn}
+
+Norms and seminorms are both examples of sublinear functionals. Another example is the upper Riemann integral, defined on the space $M[a,b]$ of bounded functions on $[a,b]$.
+
+\begin{thm}[Hahn--Banach]
+  \label{thm:hb}
+  Let $X$ be a vector space, $Y\leq X$ a subspace of $X$, and $p$ a sublinear functional on $X$. Then any linear functional $\phi_0$ on $Y$ such that $\phi\leq p$ extends to a linear functional $\phi$ on $X$ such that $\phi\leq p$.
+\end{thm}
+
+Before proving the above abstract form of the Hahn--Banach theorem, we present several key consequences regarding the construction of bounded linear functionals.
+
+\begin{cor}
+  \label{cor:hb}
+  Let $X$ be a normed vector space, $Y\leq X$ a subspace of $X$.
+  \begin{enumerate}
+  \item Any bounded linear functional $\phi_0$ on $Y$ extends to a bounded linear functional $\phi$ on $X$.
+  \item If $Y$ is closed and $z\notin Y$, then there exists a bounded linear functional $\phi$ on $X$ such that $\phi(Y)=0$ and $\phi(z)\neq0$.
+  \item The bounded linear functionals separate points: for all $x,x'\in X$, if $x\neq x'$ then there is a bounded linear functional $\phi$ on $X$ such that $\phi(x)\neq\phi(x')$.
+  \end{enumerate}
+\end{cor}
+
+\begin{proof}
+  (a) Since $\phi_0$ is a bounded linear functional on $Y$, there exists some $M$ such that $\phi(y)\leq M\|y\|$ for all $y\in Y$. We may therefore apply the Hahn--Banach theorem with the sublinear functional $p(x)=M\|x\|$. Thus $\phi_0$ extends to a linear functional $\phi$ on $X$ such that $\phi(x)\leq M\|x\|$. In particular, $\phi$ is bounded too.
+
+  (b) We first define a function $\phi_0$ on the space $Y+\RR z$ which is bounded by $p=$ the norm. For this we will let $\phi_0(y+cz)=c\phi_0(z)$ where $\phi_0(z)$ remains to be determined. In order to satisfy $\phi_0(y+cz)\leq\|y+cz\|$ we require that $c\phi_0(z)\leq\|y+cz\|$ for all $y\in Y$.
+
+  Substituting $y$ with $cy$, we see that we must choose $\phi_0(z)\leq\|y+z\|$ for all $y\in Y$. Since $Y$ is closed and $\{0\}$ is compact, we have that $\inf_{y\in Y}\|y+z\|\neq0$. It follows that we can choose a nonzero value of $\phi_0(z)$, and we may then use part (a) to extend $\phi_0$ to a bounded linear functional $\phi$ on $X$ that meets our requirements.
+
+  (c) If $x\neq x'$ then $x-x'\neq0$. Applying part (b) with $Y=\{0\}$ we can find a bounded linear functional $\phi$ such that $\phi(x-x')\neq0$. It follows that $\phi(x)\neq\phi(x')$.
+\end{proof}
+
+We now return to the proof of the Hahn--Banach theorem.
+
+\begin{proof}[Proof of Theorem \ref{thm:hb}]
+  We begin by showing that we can find a proper extension of $\phi_0$. Specifically, given any $z\in X\setminus Y$ we will find an extension of $\phi_0$ to a linear functional $\phi_1$ on $Y\oplus\RR z$ satisfying $\phi_1\leq p$. For this we will define
+  \[\phi_1(y+cz)=\phi_0(y)+c\phi_1(z)
+  \]
+  where $\phi_1(z)$ will be determined in a moment. We require that for all $x$ and all $c\in\RR$ we have
+  \[\phi(y)+c\phi_1(z)\leq p(y+cz)
+  \]
+  To isolate $\phi_1(z)$ we must consider the cases of negative and positive values of the coefficient $c$ separately. Thus assume $c>0$ and split the last equation into two conditions:
+  \begin{align*}
+    \phi_0(y)+c\phi_1(z)&\leq p(y+cz)\\
+    \phi_0(y)-c\phi_1(z)&\leq p(y-cz)
+  \end{align*}
+  Solving each for $\phi'(z)$ and substituting $y$ with $y/c$ in each gives us the two new conditions:
+  \begin{align*}
+    (\forall y)\;\phi_1(z)&\leq p(y+z)-\phi_0(y)\\
+    (\forall y)\;\phi_1(z)&\geq-p(y-z)+\phi_0(y)
+  \end{align*}
+  In order for the constraints to be satisfiable, it is sufficient to have for all $y,y'\in Y$ that $-p(y-z)+\phi_0(y)\leq p(y'+z)-\phi_0(y')$. And this is indeed the case, since
+  \begin{align*}
+    \phi_0(y_1)+\phi_0(y_2)&=\phi_0(y+y')\\
+                       &\leq p(y+y')\\
+                       &=p(y-z+y'+z)\\
+                       &\leq p(y-z)+p(y'+z)
+  \end{align*}
+  Thus we can find a suitable value for $\phi_1(z)$ and successfully extend $\phi$ to $\phi'$ as required. To complete the proof we wish to apply this step repeatedly. Since the number of steps will be uncountable in general, it is necessary to phrase our construction using the standard \emph{Zorn's lemma}: if $P$ is a partially ordered set and every chain of $P$ has an upper bound, then $P$ has a maximal element.
+
+  Now let $P$ be the collection of linear functionals $\phi$ such that $\phi$ extends $\phi_0$ and $\phi\leq p$. We partially order $P$ by function extension. A chain $\mathcal C$ in $P$ always has an upper bound, namely the set-theoretic union $\bigcup\mathcal C$ of the members of the chain. Moreover the union will be $\leq p$ because each member of the chain is $\leq p$.
+
+  Therefore we can apply Zorn's lemma to find an element $\phi$ of $P$ which is maximal with respect to function extension. We claim moreover that the domain of $\phi$ must be all of $X$. Indeed, otherwise we can use the argument above to properly extend the domain of $\phi$ to find a larger element $\phi'$ of $P$. This contradicts the maximality of $\phi$, and completes the proof.
+\end{proof}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Spaces of operators and the dual space}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 12.3, 12.7
+\end{reading}
+
+In the past two sections we have introduced and discussed the continuous operators $T\colon X\to Y$ between two normed vector spaces. In this section we study the collection of all such operators as a space in its own right.
+
+\begin{defn}
+  Let $X,Y$ be normed vector spaces. Then $B(X,Y)$ denotes the space of bounded linear operators $T\colon X\to Y$.
+\end{defn}
+
+We equip $B(X,Y)$ with the operations of \emph{pointwise addition} and \emph{pointwise scaling}. In other words, if $T,T'\in B(X,Y)$ then $T+T'$ is defined to be the operator $(T+T')(x)=T(x)+T'(x)$ and $cT$ is defined to be the operator $(cT)(x)=cT(x)$. We also equip $B(X,Y)$ with the \emph{operator norm}:
+\[\|T\|=\inf\set{M\mid(\forall x)\;\|Tx\|\leq M\|x\|}
+\]
+In other words, the operator norm of a bounded operator $T$ is the least value of $M$ which witnesses that $T$ is bounded. Naturally we must show that the operations and norm satisfy the properties of a normed vector space.
+
+\begin{prop}
+  \begin{enumerate}
+  \item $B(X,Y)$ is a normed vector space with the operations of pointwise addition and scaling, and with the operator norm.
+  \item If $Y$ is a Banach space then so is $B(X,Y)$.
+  \end{enumerate}
+\end{prop}
+
+\begin{proof}
+  (a) We first show that the operator norm is indeed a norm. The homogeneity and non-vanishing properties are easy to check. For the triangle inequality let $T,T'\in B(X,Y)$, and calculate $\|(T+T')(x)\|=\|Tx+T'x\|\leq\|Tx\|+\|T'x\|\leq\|T\|\|x\|+\|T'\|\|x\|$. It follows that $\|T+T'\|\leq\|T\|+\|T'\|$, as desired.
+
+  It also follows from homogeneity and the triangle inequality that $B(X,Y)$ is closed under scalar multiplication and addition. Thus $B(X,Y)$ is a normed vector space.
+  
+  (b) It remains only to show that $B(X,Y)$ is complete. For this let $T_n$ be a sequence of elements of $B(X,Y)$ and assume that it is Cauchy in the operator norm. This means that for all $\epsilon>0$, there exists $N$ such that for all $m,n\geq N$ we have $\|T_m-T_n\|<\epsilon$.
+
+  Now for any fixed $x\in X$, it follows from the last equation that $\|T_mx-T_nx\|<\epsilon\|x\|$. In particular, the sequence $T_nx$ is a Cauchy sequence in the space $Y$. Since we are assuming that $Y$ is complete, the sequence $T_nx$ converges and we define $Tx=\lim T_nx$.
+
+  At this point $T$ is a well-defined function from $X$ to $Y$, and that $T$ is the pointwise limit of the sequence $T_n$. We need to check that $T\in B(X,Y)$ and moreover that $T_n\to T$ in the operator norm.
+
+  To see that $T\in B(X,Y)$, first note that it is easy to check $T$ is a linear map. For example, it is additive because the limit of a sum of two sequences is the sum of the limits. To see that $T$ is bounded, we first claim that the sequence of operator norms $\|T_n\|$ is itself bounded. For this claim, recall from the reverse triangle inequality that $|\|T_n\|-\|T_m\||\leq\|T_n-T_m\|$. Thus the fact that $T_n$ is Cauchy implies that $\|T_n\|$ is Cauchy in $\RR$, and any Cauchy sequence in $\RR$ is bounded. This completes the claim.
+  
+  Now let $M$ be a bound for the sequence $\|T_n\|$. Then given $x\in X$, for all $n$ we have $\|T_nx\|\leq M\|x\|$. Taking the limit of both sides, we conclude that $\|Tx\|\leq M\|x\|$, and this means that $T$ is a bounded operator. Thus we have shown that $T\in B(X,Y)$.
+
+  Last we establish that $T_n\to T$ in operator norm. For this, given $\epsilon>0$ we have already argued that we can find $N$ such that $m,n\geq N$ implies $\|T_mx-T_nx\|<\epsilon\|x\|$ for all $x\in X$. Now let $n\geq N$ be fixed and take the limit as $m\to\infty$. This gives us $\|Tx-T_nx\|\leq\epsilon\|x\|$ for all $x$. We thus have that $\|T-T_n\|\leq\epsilon$, which means that $T_n\to T$ in operator norm.
+\end{proof}
+
+The argument for part~(b) is our first instance of a standard argument template. To show that a given function space is complete, given a Cauchy sequence $f_n$ one first constructs a proposed limit function $f$, often the pointwise limit. One then checks that $f$ actually lies in the desired space, and that $f_n\to f$ in the desired norm.
+
+In the previous section we investigated the special case of operators valued in the scalar field $\RR$. Thus it is natural to focus on the space $B(X,\RR)$ of bounded linear functionals on a space $X$. We have previously hinted that the bounded linear functionals play the role of dual vectors (or row vectors) in infinite-dimensional spaces. We are now ready to make this a formal definition.
+
+\begin{defn}
+  If $X$ is a normed (real) vector space then the \emph{dual} of $X$ is $X^*=B(X,\RR)$.
+\end{defn}
+
+By the results of this section, the dual space $X^*$ is always a Banach space with the operator norm. By the Corollary to the Hahn--Banach theorem, the elements of the dual space are plentiful in the sense that they separate the points of $X$. In fact, now that we have introduced the operator norm, we can strengthen two of the statements in Corollary~\ref{cor:hb}.
+
+\begin{cor}
+  \label{cor:hb2}
+    Let $X$ be a normed vector space, $Y\leq X$ a subspace of $X$.
+  \begin{enumerate}
+  \item Any $\phi_0\in Y^*$ extends to an element $\phi\in X^*$ such that $\|\phi\|=\|\phi_0\|$.
+  \item If $Y$ is closed and $z\notin Y$, then there exists $\phi\in X^*$ such that $\phi(Y)=0$, $\phi(z)\neq0$, and $\|\phi\|=1$.
+  \end{enumerate}
+\end{cor}
+
+\begin{proof}
+  (a) Since $\phi$ is an extension of $\phi_0$, we always have $\|\phi\|\geq\|\phi_0\|$. And in the proof Corollary~\ref{cor:hb}(a), it is apparent that $\|\phi\|\leq\|\phi_0\|$.
+
+  (b) In the proof of Corollary~\ref{cor:hb}(b), it is clear that $\|\phi_0\|\leq 1$. And since the value of $\inf_{y\in Y}\|y+z\|$ is attained, it is not difficult to argue that $\|\phi_0\|=1$. Therefore by part~(a) we have $\|\phi\|\leq1$.
+\end{proof}
+
+We close this section with the following result about the double dual of a space.
+
+\begin{prop}
+  Let $X$ be a normed vector space. Then there is a norm-preserving operator from $X$ into its double dual $X^{**}$.
+\end{prop}
+
+\begin{proof}
+  We define an embedding $x\mapsto\hat x$ from $X$ to $X^{**}$ as follows. Given an element $x\in X$, we define the corresponding element $\hat x\in X^{**}$ by the formula:
+  \[\hat x(\phi)=\phi(x)
+  \]
+  So $\hat x$ is a function from $X^*$ to $\RR$. And $\hat x$ is linear because $\hat x(\phi_1+\phi_2)=(\phi_1+\phi_2)(x)=\phi_1(x)+\phi_2(x)=\hat x(\phi_1)+\hat x(\phi_2)$. Next $\hat x$ is bounded because $|\hat x(\phi)|=|\phi(x)|\leq\|\phi\|\cdot\|x\|$. Thus we have verified that $\hat x\in X^{**}$.
+
+  Now we verify that the map $x\mapsto\hat x$ is itself linear. Indeed, we have $\widehat{x_1+x_2}(\phi)=\phi(x_1+x_2)=\phi(x_1)+\phi(x_2)=\hat x_1(\phi)+\hat x_2(\phi)$. And similarly for scalar multiplication.
+
+  Finally to show that $x\mapsto\hat x$ is norm-preserving, note that the calculation in the first paragraph shows that $\|\hat x\|\leq\|x\|$. To show that $\|\hat x\|\geq\|x\|$, we use Corollary~\ref{cor:hb2}(b) to obtain $\phi\in X^*$ such that $\phi(x)=\|x\|$ and $\|\phi\|=1$. Thus we have that $\hat x(\phi)=\phi(x)=\|x\|=\|x\|\|\phi\|$, which witnesses that $\|\hat x\|\geq\|x\|$.
+\end{proof}
+
+The above proposition may seem esoteric, but it has many uses. For example, if $X$ is incomplete then we can use it to give a concrete construction of the Banach space completion of $X$. For this, observe that since $x\mapsto\hat x$ is norm-preserving, we have that $X$ is isomorphic to its image $\hat X$ in $X^{**}$. Since we have shown above that every dual is complete, we know that $X^{**}$ is complete. It follows that the completion of $X$ is isomorphic to the closure of $\hat X$ in $X^{**}$.
+
+It can even happen that the map $x\mapsto\hat x$ is surjective onto $X^{**}$. This special property will be investigated in future sections.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Three results on Banach spaces}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 12.11, 12.13, 12.14
+\end{reading}
+
+In our introduction to normed vector spaces, we singled out the special case when the space is complete and called it a Banach space. However in our investigation we have said  very little that is special to Banach spaces. In this section we present several key results that are essentially unique to Banach spaces because they rely on the completeness property.
+
+The three key results we will present are called the uniform boundedness principle, the open mapping theorem, and the closed graph theorem. In ecah case, rather than proved a proof we will state the result and give a sample application.
+
+\begin{thm}[Uniform boundedness principle]
+  Let $X,Y$ be Banach spaces and $\mathcal F$ a family of bounded operators from $X$ to $Y$. Suppose that for all $x$ there exists a constant $M_x$ such that for all $T\in\mathcal F$ we have $\|Tx\|\leq M_x$. Then there exists a constant $M$ such that for all $T\in\mathcal F$ we have $\|T\|\leq M$.
+\end{thm}
+
+It is often remarked that the uniform boundedness principle sounds too good to be true---it has a pointwise hypothesis and a uniform conclusion. Regardless, it is true and has a short proof from the Baire category theorem for complete metric spaces. Because of its power the uniform boundedness principle is used quite frequently. We present just one simple consequence concerning pointwise convergence of operators.
+
+\begin{cor}
+  Let $X,Y$ be Banach spaces and let $T_n\colon X\to Y$ be a sequence of bounded operators. If $T_n\to T$ pointwise, then $T$ is a bounded operator too.
+\end{cor}
+
+\begin{proof}
+  We have already observed that a pointwise limit of operators is an operator. Hence it remains only to check that $T$ is bounded. Now given any $x\in X$, since $\{T_nx\}$ is a convergent sequence of $Y$, it is necessarily a bounded sequence of $Y$. In other words, the sequence $\{\|T_nx\|\}$ is bounded. By the uniform boundedness principle, there exists a constant $M$ such that $\|T_n\|\leq M$ for all $n$. Thus for any $x\in X$ we have
+  \begin{align*}
+    \|Tx\|&=\|\lim T_nx\|\\
+          &=\lim\|T_nx\|\\
+          &\leq\limsup\|T_n\|\|x\|\\
+          &\leq M\|x\|
+  \end{align*}
+  In particular, $T$ is bounded and $\|T\|\leq M$.
+\end{proof}
+
+For our next result, recall that a function is continuous if the preimage of any open set is open. A somewhat less used but still very important property is the reverse. A function is called \emph{open} if the image of any open set is open. In the case that a function has an inverse, the open property simply means that the inverse is continuous. However it is still a valuable property even for functions which are not bijections.
+
+\begin{thm}[Open mapping theorem]
+  Let $X,Y$ be Banach spaces and $T\colon X\to Y$ be a bounded operator. If $T$ is onto, then $T$ is open.
+\end{thm}
+
+We present just one simple consequence here concerning equivalence of norms. If $X$ is a normed vector space with two norms, $\|\cdot\|_a$ and $\|\cdot\|_b$, we say that $a,b$ are \emph{equivalent} if there exist constants $c,d$ such that for all $x\in X$ we have $\|x\|_a\leq c\|x\|_b$ and $\|x\|_b\leq d\|x\|_a$.
+
+In other words, norms are equivalent if their unit balls can be rescaled to fit inside one another. For example, the space $\RR^2$ can be equipped with the usual Euclidean norm $\|(x,y)\|_2=\sqrt{x^2+y^2}$, and also with the taxicab norm $\|(x,y)\|=|x|+|y|$. The Euclidean norm has a circular unit ball, and the taxicab norm has a diamond shaped unit ball. The diamond fits inside the circle, and the circle can be scaled down by $\sqrt2$ to fit inside the diamond. Thus the two norms are equivalent.
+
+\begin{cor}
+  Suppose $X$ is a Banach space with two complete norms $\|\cdot\|_a$ and $\|\cdot\|_b$. Then if there is a constant $c$ such that $\|x\|_a\leq c\|x\|_b$ for all $x\in X$, then $\|\cdot\|_a$ and $\|\cdot\|_b$ are equivalent.
+\end{cor}
+
+\begin{proof}
+  Let $\id\colon X\to X$ denote the identity mapping. If we consider $\id$ as an operator from $(X,\|\cdot\|_b)$ to $(X,\|\cdot\|_a)$, then the hypothesis implies that $\id$ is bounded and hence continuous. It follows from the open mapping theorem that $\id$ is open, that is, it maps open sets to open sets. Since $\id$ is a bijection, this simply means that $\id^{-1}$ is continuous and hence bounded. Thus we conclude that there exists a constant $d$ suh that $\|x\|_b\leq d\|x\|_d$ for all $x\in X$.
+\end{proof}
+
+Before stating our final result, recall from topology that if $f\colon X\to Y$ is a continuous function then $f$ has a \emph{closed graph}, that is, the set of pairs $\{(x,y)\in X\times Y\mid f(x)=y\}$ is closed in $X\times Y$. The next theorem states that the converse holds for bounded operators on Banach spaces.
+
+\begin{thm}[Closed graph theorem]
+  Let $X,Y$ be Banach spaces and $T\colon X\to Y$ be an operator. If the graph of $T$ is a closed subset of $X\times Y$, then $T$ is bounded.
+\end{thm}
+
+Observe that $T$ has a closed graph if and only if $x_n\to x$ and $Tx_n\to y$ implies $y=Tx$. On the other hand, recall that $T$ is continuous if and only if $x_n\to x$ implies $Tx_n\to Tx$.  So it is easier to check that $T$ has a closed graph than to check that $T$ is continuous, because when checking the former one can assume for free that $T_nx$ converges to \emph{something}.
+
+Rather than give a consequence of the closed graph theorem, we will give an important example. Let $C[a,b]$ be the Banach space of continious functions on $[a,b]$ with the supremum norm, and let $C^1[a,b]$ be the subspace of all functions with continuous derivative. Let $D\colon C^1[a,b]\to C[a,b]$ be the derivative operator. To check $D$ has a closed graph, we suppose that $f_n\to f$ and $Df_n\to g$ in supremum norm and verify that $Df=g$. For this we integrate both sides of $Df_n\to g$ and use the fundamental theorem of calculus to conclude that $f_n\to G$, where $G$ is the antiderivative of $g$. Since $f_n$ converges to $f$, we have $f=G$. Now differentiating both sides we conclude that $Df=g$, as desired.
+
+While have just checked that $D$ has a closed graph, it is also easy to check that $D$ is not bounded. Thus the contrapositive of the closed graph theorem implies that $D[a,b]$ is not a Banach space! This is an admittedly somewhat silly way to see this fact, since it is also possible to argue directly that $D[a,b]$ is not complete.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{The Banach space $L^p$}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 13.1, 13.2
+\end{reading}
+
+As we have seen, many of the most important Banach spaces are function spaces arising in other areas of analysis. We have already seen the Banach space $L^1$ of absolutely integrable functions, and we have seen that there are several other norms derived from summation and integration. In this section we further investigate the $L_p$-spaces, which generalize many of these important examples.
+
+\begin{defn}
+  Let $(X,\mathcal B)$ be a measurable space and let $\mu$ be a measure on it. For any measurable $f$ defined on $X$ we let
+  \[\|f\|_p=\left(\int|f|^p\;d\mu\right)^{1/p}
+  \]
+  We then define the space
+  \[L_p(\mu)=\set{f\mid\text{$f$ is a measurable function on $X$ and } \|f\|_p<\infty}
+  \]
+\end{defn}
+
+Thus the spaces $L^1(X)$ and $L^2(X)$ are each examples of $L^p$-spaces, but so are a variety of others. When $X$ is the finite set $\{1,\ldots,n\}$ with the counting measure, the resulting space is just $\RR^d$ with its $p$-norm. When $X=\NN$ with the counting measure, the resulting space is the sequence space with its $p$-norm, and is often given the special notation $\ell^p$.
+
+The rest of this section is devoted to verifying that whenever $p\geq1$, $L^p$ really is a Banach space with respect to the norm $\|\cdot\|_p$. Before we can prove this result, it is necessary to establish the following fundamental inequality.
+
+\begin{thm}[H\"older's inequality]
+  Let $p,q\geq1$ be real numbers such that $1/p+1/q=1$. If $f\in L^p(\mu)$ and $g\in L^q(\mu)$, then $fg$ is absolutely integrable and
+  \[\int|fg|\;d\mu\leq\|f\|_p\|g\|_q
+  \]
+\end{thm}
+
+\begin{proof}
+  First, given $f,g$ as in the theorem statement, we can rescale to assume that $\|f\|_p=\|g\|_q=1$. Indeed, observe that both $\|\cdot\|_p$ and $\|\cdot\|_q$ satisfy the homogeneity property. Now our objective is to show that $\int|fg|\,d\mu\leq1$.
+
+  For this we will invoke the following simple inequality about nonnegative real numbers, which will be left to the reader: $ab\leq a^p/p+b^q/q$. Plugging in $a=|f(x)|$ and $b=|g(x)|$ we obtain that
+  \[|f(x)g(x)|\leq\frac1p|f(x)|^p+\frac1q|g(x)|^q
+  \]
+  Taking the integral of both sides we obtain
+  \[\int|fg|\,d\mu\leq\frac1p(\|f\|_p)^p+\frac1q(\|g\|_q)^q
+    =\frac1p+\frac1q=1
+  \]
+  as desired.
+\end{proof}
+
+The next result establishes that the norms $\|\cdot\|_p$ satisfy the triangle inequality.
+
+\begin{thm}[Minkowski's inequality]
+  Suppose that $p\geq1$. If $f,g\in L^p(\mu)$, then $\|f+g\|_p\leq\|f\|_p+\|g\|_p$.
+\end{thm}
+
+\begin{proof}
+  We can assume without loss of generality that $f,g$ never take the value $\infty$. We begin by writing
+  \begin{align*}
+    |f(x)+g(x)|^p&=|f(x)+g(x)|\cdot|f(x)+g(x)|^{p-1}\\
+                 &\leq|f(x)|\cdot|f(x)+g(x)|^{p-1}
+                   +|g(x)|\cdot|f(x)+g(x)|^{p-1}
+  \end{align*}
+  We now integrating both sides of this inequality, and then apply H\"older's inequality to each of the resulting terms. In the following calculation, we also note that our hypothesis implies that the value $q$ used in H\"older's inequality is equal to $p/(p-1)$. Here is the computation:
+  \begin{align*}
+    (\|f+g\|_p)^p&\leq\int|f|\cdot|f+g|^{p-1}\,d\mu
+                   +\int|g|\cdot|f+g|^{p-1}\,d\mu\\
+                 &\leq\|f\|_p\cdot\|(f+g)^{p-1}\|_q
+                   +\|g\|_p\cdot(\|(f+g)^{p-1}\|_q\\
+                 &=\|f\|_p\cdot\|(f+g)^{p-1}\|_{p/(p-1)}
+                   +\|g\|_p\cdot(\|(f+g)^{p-1}\|_{p/(p-1)}\\
+                 &=\|f\|_p\cdot(\|f+g\|_p)^{p-1}
+                   +\|g\|_p\cdot(\|f+g\|_p)^{p-1}\\
+                 &\leq\|f\|_p\cdot(\|f+g\|_p)^{p-1}
+                   +\|g\|_p(\|f+g\|_p)^{p-1}\\
+                 &=(\|f\|_p+\|g\|_p)(\|f+g\|_p)^{p-1}
+  \end{align*}
+  We may now divide both sides by $(\|f+g\|_p)^{p-1}$ to obtain the desired conclusion.
+\end{proof}
+
+We are now ready to prove that the $L^p$ spaces are in fact Banach spaces.
+
+\begin{thm}
+  The space $L^p(\mu)$ with the norm $\|\cdot\|_p$ is a Banach space.
+\end{thm}
+
+\begin{proof}
+  It is clear that the norm is homogeneous and non-vanishing, and we have just shown it satisfies the triangle inequality. This also implies that $L^p(\mu)$ is closed under linear combinations and therefore it is a vector space. It therefore remains only to show that the norm $\|\cdot\|_p$ is complete.
+
+  For this let $f_n$ be a sequence of elements of $L^p(\mu)$ which is Cauchy in the $\|\cdot\|_p$ norm. Passing to a subsequence if necessary, we can suppose without loss of generality that for all $n$ we have $\|f_{n+1}-f_n\|_p<1/2^n$. We first wish to show that this implies $f_n$ has a pointwise limit $f$.
+
+  Let $g_k=\sum_1^k|f_{n+1}-f_n|$ and $g=\sum_1^\infty|f_{n+1}-f_n|$. Thus $g$ is the limit of the $g_k$, and unfortunately $g$ may take the value $+\infty$. However this cannot happen too often. By Minkowski's inequality we have
+  \[\|g_k\|_p\leq\sum_{n=1}^k\|f_{n+1}-f_n\|_p\leq\sum1/2^n=1
+  \]
+  and by Fatou's Lemma, $\int|g|^p\leq\liminf\int|g_k|^p\leq1$. Thus we can conclude that $g$ is finite $\mu$-almost everywhere. Now telescoping we have:
+  \[\lim_{n\to\infty} f_n(x)=\lim_{k\to\infty}\left[f_1(x)
+      +\sum_{n=1}^k(f_n(x)-f_n(x))\right]
+  \]
+  The latter sum is absolutely convergent and hence convergent for $\mu$-almost every $x$. Thus the expression is well-defined and we can define $f(x)=\lim f_n(x)$.
+
+  It remains only to show that $f$ lies in $L^p$ and that $f_n\to f$ in the norm $\|\cdot\|_p$. For this, let $\epsilon$ be given and choose $N$ large enough that $n,m\geq N$ implies $\|f_m-f_n\|_p<\epsilon$. Fixing $n$ and applying Fatou's Lemma to the resulting $m$-sequence we obtain
+  \[\int|f-f_n|^p\leq\liminf_n\int|f_m-f_n|^p\leq\epsilon
+  \]
+  This shows that $\|f-f_n\|_p\to0$, or in other words that $f_m\to f$ in $L^p$. Finally if $n\geq N$ then we have $\|f\|_p\leq\|f-f_n\|_p+\|f_n\|_p<\infty$, so $f\in L^p$ too.
+\end{proof}
+
+While the results above apply to values of $p$ such that $1\leq p<\infty$, there is also a version of $L^p$ space for $p=\infty$.
+
+\begin{defn}
+  Let $(X,\mathcal B)$ be a measurable space and let $\mu$ be a measure on it. For any measurable $f$ defined on $X$ we let
+  \[\|f\|_\infty=\inf\set{M\mid |f(x))|\leq M\text{ for $\mu$-almost all $x$}}
+  \]
+  We then define the space
+  \[L^\infty(\mu)=\set{f\mid\text{$f$ is a measurable function on $X$ and } \|f\|_\infty<\infty}
+  \]
+\end{defn}
+
+The norm $\|f\|_\infty$ is called the \emph{essential supremum} of $f$, and the members of $\L^\infty$ are said to be \emph{essentially bounded}. We will state without proof the following generalizations of our results for $L^p$ to the case $p=\infty$.
+
+\begin{thm}
+  Let $(X,\mathcal B)$ be a measurable space and $\mu$ a measure on it.
+  \begin{itemize}
+  \item If $f\in L^1(\mu)$ and $g\in L^\infty(\mu)$ then $fg$ is absolutely integrable and H\"older's inequality is true: $\int|fg|\,d\mu\leq\|f\|_1\cdot\|g\|_\infty$.
+  \item The space $L^\infty(\mu)$ is a Banach space with the norm $\|\cdot\|_\infty$.
+  \end{itemize}
+\end{thm}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{The dual space of $L^p$}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 13.6, Tao ``an $\epsilon$ of room" \S 1.2
+\end{reading}
+
+Recall that if $X$ is a normed vector space, then its dual $X^*$ consists of all bounded linear functionals on $X$. Although it is somewhat rare to be able to describe the space $X^*$ completely, in this section we will do so for $L^p$.
+
+To get started looking for bounded linear functionals on $L^p$, a good place to start is in $L^q$ where $q$ is the conjugate exponent to $p$ (that is, $1/p+1/q=1$). To see why, let $g\in L^q$ and consider the mapping
+\[f\mapsto \int fg\,d\mu
+\]
+This is clearly linear on $L^p$, and H\"older's inequality implies that $\left|\int fg\,d\mu\right|\leq\|f\|_p\cdot\|g\|_q$, or in other words, that this mapping is a bounded linear functional on $L^p$! The main result is that \emph{every} bounded linear functional arises this way.
+
+\begin{thm}
+  \label{thm:lpdual}
+  Let $(X,\mathcal B)$ be a measure space and $\mu$ a measure on it. Assume that $\mu$ is $\sigma$-finite, that is, $X=\bigcup A_n$ where $\mu(A_n)<\infty$. Let $1\leq p<\infty$ and let $q$ be the conjugate exponent, that is, $1/p+1/q=1$. Then for every $\phi\in L^p(\mu)^*$ there exists a unique $g\in L^q(\mu)$ such that
+  \[\phi(f)=\int fg\,d\mu
+  \]
+  Moreover $\|\phi\|=\|g\|_q$, and $L^p(\mu)^*\cong L^q(\mu)$.
+\end{thm}
+
+To prove this result, it will be necessary to introduce a generalization of measures called signed measures. To motivate this from the study of functionals on $L^p$-space, observe that a functional $\phi$ on induces something like a finitely additive measure by defining $\nu(E)=\phi(\chi_E)$. Indeed, if $E,F$ are disjoint sets then
+\[\nu(E\cup F)=\phi(\chi_{E\cup F})=\phi(\chi_E+\chi_F)
+  =\phi(\chi_E+\chi_F)=\nu(E)+\nu(F)
+\]
+However we of course see that $\nu$ may take negative values, and so it is not a measure in our original sense.
+
+\begin{defn}
+  Let $(X,\mathcal B$) be a measurable space. A \emph{signed measure} on $(X,\mathcal B)$ is a function $\mu\colon\mathcal B\to[-infty,\infty]$ with the properties:
+  \begin{itemize}
+  \item $\mu(\emptyset)=0$;
+  \item $\mu$ does not take both the value $\infty$ and $-\infty$; and
+  \item If $E_n$ are disjoint then $\sum\mu(E_n)$ converges to $\mu(\bigcup E_n)$.
+  \end{itemize}
+\end{defn}
+
+We have seen above how functionals $\phi$ give rise to something like a finitely additive signed measure. For another example of signed measures, recall from Tonelli's theorem that if $\mu$ is a measure on $(X,\mathcal B)$ and $g\geq0$, then we can form a new measure by defining
+\[\mu_g(E)=\int\chi_Eg\,d\mu
+\]
+From this definition, it is clear that if $\mu(E)=0$ then $\mu_g(E)=0$ too. The next result states that this condition is sufficient to guarantee that a signed measure is of the form $\mu_g$.
+
+\begin{thm}[Radon--Nikodym]
+  Let $(X,\mathcal B)$ be a measurable space and let $\mu$ be an unsigned measure and $\nu$ be a signed measure on it. Assume that $\mu,\nu$ are $\sigma$-finite. Then if $\mu(E)=0\implies\nu(E)=0$, then there exists $g\in L^1(\mu)$ such that $\nu=\mu_g$.
+\end{thm}
+
+We now have all the ingredients we need to prove that the dual of $L^p$ is $L^q$. Indeed, using a the simple construction $\nu(E)=\phi(\chi_E)$ we will be able to establish a correspondence between functionals and signed measures. Then the Radon--Nikodym theorem gives us a function $g$ such that $\nu(E)=\int\chi_Eg\,d\mu$. Putting these together, we see that $\phi(\chi_E)=\int\chi_Eg\,d\mu$, or in other words that $\phi$ is as claimed at least for the characteristic functions. We are therefore left to check that this property can be extended to arbitrary functions $f\in L^p$, as well as the other claims.
+
+\begin{proof}[Sketch of proof of Theorem~\ref{thm:lpdual}]
+  In this proof, we will sketch only the case when $1<p<\infty$ and $\mu(X)=0$. It is not essentially more difficult to complete the proof from this simplified version.
+
+  Given a functional $\phi\in L^p(\mu)^*$, we first define the mapping $\nu(E)=\phi(\chi_E)$. We have already checked that $\nu$ is finitely additive. We claim that in fact $\nu$ is a signed measure. Indeed, if $E_n$ is a given sequence of pairwise disjoint sets, then using the finiteness of $\mu$ and the dominated convergence theorem we have:
+  \[\int|\chi_{\bigcup E_n}-\chi_{\bigcup_1^kE_n}|^p\,d\mu
+    =\int|\chi_{\bigcup_{k+1}^\infty E_n}|^p\,d\mu
+    \to0
+  \]
+  In other words, we have that $\chi_{\bigcup_1^kE_n}\to\chi_{\bigcup E_n}$ in the $L^p$-norm. Using the fact that $\phi$ is a continuous function on $L^p$, it follows that
+  \begin{align*}
+    \nu(\bigcup E_n)&=\phi(\chi_{\bigcup E_n})\\
+                    &=\lim_k\phi(\chi_{\bigcup_1^kE_n})\\
+                    &=\lim_k\nu(\bigcup_1^kE_n)\\
+                    &=\lim_k\sum_1^k\nu(E_n)\\
+                    &=\sum\nu(E_n)
+  \end{align*}
+  and so $\nu$ is countably additive.
+
+  Now by the Radon--Nikodym theorem, there exists a function $g\in L^1(\mu)$ such that $\phi(\chi_E)=\int\chi_Eg\,d\mu$ for all sets $E$. It therefore follows from linearity that $\phi(f)=\int fg\,d\mu$ for all simple functions $f$.
+
+  We next claim that $\phi(f)=\int fg\,d\mu$ for all functions $f$ in $L^\infty(\mu)$. For this recall that any bounded measurable function is a \emph{uniform} limit of simple functions. So given $f\in L^\infty(\mu)$ let $f_n$ be a sequence of simple functions such that $f_n\to f$ uniformly. Using the uniform convergence on a finite measure space, we can easily argue that $\int f_ng\,d\mu\to\int fg\,d\mu$. For the same reason, we can also argue that $f_n\to f$ in $L^p$. Since $\phi$ is continuous on $L^p$ we therefore have that:
+  \begin{align*}
+    \phi(f)&=\lim_n\phi(f_n)\\
+           &=\lim_n\int f_ng\,d\mu\\
+           &=\int fg\,d\mu
+  \end{align*}
+  as desired.
+
+  While our next goal is of course to show that $\phi(f)=\int fg\,d\mu$ for all functions $f\in L^p$, we first take a break and show that $g$ lies in $L^q$. In fact we will show that $\|g\|_q\leq\|\phi\|$. First we can use the truncation lemma to suppose that $g$ is bounded. Then $|g|^q/g$ is bounded too, and so by our work for functions in $L^\infty$ we can calculate:
+  \begin{align*}
+    \int|g|^q\,d\mu&=\int(|g|^q/g)g\,d\mu\\
+                   &=\phi(|g|^q/g)\\
+                   &\leq\|\phi\|\cdot\|g^{q-1}\|_p\\
+                   &=\|\phi\|\cdot\left(\int|g|^q\,d\mu\right)^{1/p}
+  \end{align*}
+  This inequality implies that $\|g\|_q\leq\|\phi\|$, as desired. We remark that this implies the functional $f\mapsto\int fg\,d\mu$ is continuous, since H\"older's inequality states that $\left|\int fg\,d\mu\right|\leq\|f\|_p\cdot\|g\|_q$.
+
+  We now claim that we have $\phi(f)=\int fg\,d\mu$ for any $f\in L^p(\mu)$. For this, recall that we have previously shown that the simple functions are \emph{dense} in $L^1(\mu)$, that is any $L^1(\mu)$ function is an $L^1(\mu)$-limit of simple functions. The same argument can be used to show that the simple functions are dense in $L^p(\mu)$. We have shown above that the two functionals, $f\mapsto\phi(f)$ and $f\mapsto\int fg\,d\mu$, agree on the simple functions. Our hypothesis states that $\phi$ continuous, and the previous paragraph implies that $f\mapsto\int fg\,d\mu$ continuous too. Since two continuous functions that agree on a dense set must agree on their domain, we can conclude that $\phi(f)=\int fg\,d\mu$ for all $f\in L^p(\mu)$.
+
+  Finally we claim that $\|g\|_q=\|\phi\|$. Indeed we now know that $|\phi(f)|=\left|\int fg\,d\mu\right|\leq\|f\|_p\cdot\|g\|_q$, and hence that $\|\phi\|\leq\|g\|_q$. We have also shown two paragraphs previously that $\|g\|_q\leq\|\phi\|$. This concludes the proof.
+\end{proof}
+
+\begin{notes}
+  The Radon--Nikodym theorem has a generalization called the Lebesgue--Radon--Nykodym theorem which states that given $\mu$, any signed measure $\nu$ can be decomposed $\nu=\mu_g+\delta$ where $\mu,\delta$ have disjoint supports.
+
+  We have stated that the dual of $L^1$ is equal to $L^\infty$ when $\mu$ is $\sigma$-finite. However the reverse is usually not true. Instead the dual of $L^\infty(\mu)$ is the space of all finitely additive signed measures $\nu$ such that $\mu(E)=0\implies\nu(E)=0$.
+\end{notes}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Hilbert space}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT \S 13.5, 14.1, 14.3
+\end{reading}
+
+% maybe just do REAL hilbert spaces, and write some info about the complex case in the further reading below
+
+Up until this point in our study of $L^p$ spaces, we have not been concerned with the value of $p$ so long as $1<p<\infty$. However it should not be surprising that there is something special about the case $p=2$. In this section we will uncover some of the special properties of $L^2$, as well as use these properties to define a new type of space called a Hilbert space.
+
+Informally, $L^2$ is the $L^p$ space which is most closely analogous to classical Euclidean space. This is because the norm $\|\cdot\|_2$ is a generalization of the Euclidean norm $\|x\|=\sqrt{x_1^2+\cdots+x_n^2}$. Intuitively, this means that the geometry of $L^2$ has the ``round circle'' geometry of finite-dimensional Euclidean space.
+
+More formally, $L^2$ shares several key properties with classical Euclidean space that are not shared by any other $L^p$. First, since the conjugate exponent of $2$ is $2$ itself, the previous section shows that $L^2$ is \emph{self-dual}, that is, $(L^2)^*\cong L^2$. In detail, this means that the bounded linear functionals on $L^2$ are all of the form $f\mapsto\int fg$ where $g\in L^2$ itself. This recalls the case of Euclidean space $\RR^d$ where the functionals are all given by an inner product $x\mapsto y^Tx$.
+
+The key idea of this section is that the pairing $\int fg$ may be regarded as an inner product too, and this leads to the following definition. For for greatest generality, we will now return to vector spaces with complex scalars.
+
+\begin{defn}
+  Let $X$ be a complex vector space. A function $\langle\cdot,\cdot\rangle\colon X\times X\to\CC$ is called an \emph{inner product} if it satisfies
+  \begin{enumerate}
+  \item (positivity/nonvanishing) for $x\in X$ we have $\langle x,x\rangle\geq0$, and $\langle x,x\rangle=0$ iff $x=0$;
+  \item (conjugate symmetry) for $x,y\in X$ we have $\langle x,y\rangle=\overline{\langle y,x\rangle}$; and
+  \item (linearity in the first coordinate) $\langle c_1x_1+c_2x_2,y\rangle=c_1\langle x_1,y\rangle+c_2\langle x_2,y\rangle$
+  \end{enumerate}
+  If $X$ admits an inner product then it automatically admits a norm $\|x\|=\sqrt{\langle x,x\rangle}$, and $X$ is called a \emph{Hilbert space} if this norm is complete.
+\end{defn}
+
+We will prove shortly that the operation $\|\cdot\|$ defined above is really a norm. We remark that (b) and (c) together imply that $\langle\cdot,\cdot\rangle$ is \emph{conjugate linear} in the second coordinate (we leave it to the reader to state and verify this formally).
+
+Thus the Banach space $X=L^2(\mu)$ (with the complex scalars) is a Hilbert space with respect to the inner product
+\[\langle f,g\rangle=\int f\bar g\,d\mu
+\]
+Similarly, the sequence space $\ell^2=\set{x\in\CC^\NN\mid\sum |x_i|^2<\infty}$ is a Hilbert space with respet to the inner product
+\[\langle x,y\rangle=y^*x=\sum x_i\bar{y}_i
+\]
+Of course $\ell^2$ is not really a separate example, since $\ell^2$ is equal to $L^2(\mu)$ where $\mu$ is the counting measure on $\NN$.
+
+While a Hilbert space may seem like just a small ``upgrade'' from a Banach space, it is quite significant. For example, we will see in the next section that $L^2$ and $\ell^2$ are essentially the only examples of Hilbert spaces.
+
+We now lay out some of the most basic facts about Hilbert space. Our first result is the following analog of H\"older's inequality.
+
+\begin{thm}[Schwarz inequality]
+  Let $X$ be an inner product space. Then $|\langle x,y\rangle|\leq\|x\|\cdot\|y\|$.
+\end{thm}
+
+\begin{proof}
+  The proof is a simpler version of the proof of H\"older's inequality. First, by multiplying $x$ by a scalar of the form $e^{i\theta}$, we may assume that $\langle x,y\rangle$ is real. Next given $x,y$ we define a real function $p(\alpha)=\langle\alpha x+y,\alpha x+y\rangle$. Then by axiom (a) we have that $p(\alpha)\geq0$. And by axiom (c) we have
+  \[p(\alpha)=\alpha^2\|x\|^2+2\alpha\langle x,y\rangle+\|y\|^2
+  \]
+  Thus $p$ is a quadratic and $p\geq0$, which implies $p$ has at most one real root. This means that the discriminant is non-positive, that is, $4|\langle x,y\rangle|^2-4\|x\|^2\cdot\|y\|^2\leq0$. This equation easily implies the desired result.
+\end{proof}
+
+We are now ready to prove the fact that every inner product space automatically has a norm.
+
+\begin{prop}
+  Let $X$ be an inner product space. Then $\|x\|=\sqrt{\langle x,x\rangle}$ makes $X$ into a normed vector space.
+\end{prop}
+
+\begin{proof}
+  Since the nonvanishing and homogeneity properties are automatic from the axioms, it remains only to verify the triangle inequality. For this we simply calculate:
+  \begin{align*}
+    \|x+y\|^2&=\langle x+y,x+y\rangle\\
+             &=\langle x,x\rangle+\langle x,y\rangle+\langle y,x\rangle+\langle y,y\rangle\\
+             &\leq \langle x,x\rangle+2|\langle x,y\rangle|+\langle y,y\rangle\\
+             &\leq\|x\|^2+2\|x\|\cdot\|y\|+\|y\|^2\\
+             &=(\|x\|+\|y\|)^2
+  \end{align*}
+  Here, the first inequality uses axiom (b) and the ordinary triangle inequality, and the second inequality uses the Schwarz inequality. Taking the square root of both sides, we achieve the desired result.
+\end{proof}
+
+Perhaps the most important feature of Hilbert spaces that is not present in an ordinary Banach space is that of orthogonality.
+
+\begin{defn}
+  Let $X$ be a Hilbert space. We say that vectors $x,y\in X$ are \emph{orthogonal} if $\langle x,y\rangle=0$. Given a vector subspace $Y\subset X$ we define its \emph{orthogonal complement} $Y^\perp=\set{x\in X\mid(\forall y\in Y)\;\langle x,y\rangle=0}$.
+\end{defn}
+
+The orthogonal complement does not always behave as one would expect from classical Euclidean space. For example, if $Y$ is a dense subspace of $X$ then $Y^\perp=0$. However if $Y$ is a closed subspace, then the familiar properties hold.
+
+\begin{prop}
+  Let $X$ be a Hilbert space and let $Y\leq X$ be a closed subspace. Then $X=Y\oplus Y^\perp$ in the sense that every $x\in X$ can be uniqely expressed as $x=y+y'$ where $y\in Y$ and $Y'\in Y^\perp$.
+\end{prop}
+
+The idea behind the proof is as follows. Given $x$, let $y\in Y$ be the unique point in $Y$ which is closest to $x$. Such a point $y$ exists and is unique thanks to the familiar geometry of Hilbert space.
+
+This basic fact has many consequences, beginning with the following. First recall that our motivation for defining Hilbert spaces was the fact that $L^2$ is sel-dual, and thus the action of $(L^2)^*$ on $L^2$ behaves like an inner product. Our final result of this section states that the converse holds, that is, if $X$ admits an inner product then it is self-dual.
+
+\begin{thm}
+  If $X$ is a Hilbert space, then $X$ is self-dual. That is, for any $\phi\in X^*$ there exists $y\in X$ such that $\phi(x)=\langle x,y\rangle$. Moreover the correspondence $\phi\mapsto y$ is a conjugate-linear isomorphism $X^*\cong X$.
+\end{thm}
+
+\begin{proof}
+  Given $\phi$, we let $Y=\set{x\in X\mid\phi(x)=0}$. Assuming $Y\neq X$, we may choose $z\in Y^\perp$ such that $\|z\|=1$. We then let $y=\overline{\phi(z)}z$. Then we have
+  \begin{align*}
+    \phi(x)-\langle x,y\rangle&=\phi(x)-\phi(z)\langle x,z\rangle\\
+                              &=\phi(x)\langle z,z\rangle-\phi(z)\langle x,z\rangle\\
+                              &=\langle\phi(x)z-\phi(z)x,z\rangle\\
+                              &=0
+  \end{align*}
+  Here the last equality follows from the fact that $\phi(x)z-\phi(z)x$ lies in $Y$.
+\end{proof}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Bases for Hilbert space}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{reading}
+  BBT, \S 14.4
+\end{reading}
+
+In the previous section we have seen that Hilbert spaces possess many properties which are familiar from $\RR^n$ and $L^2$. The special properties are made possible by the inner product and its corresponding notion of orthogonality. In this section we make further use of orthogonality, in particular introducing orthonormal bases.
+
+Although bases are essential to the study of classical linear algebra, they have been absent so far in our study of Banach spaces.
+
+\begin{defn}
+  Let $X$ be a Hilbert space. A subset $\{e_\alpha\}_{\alpha\in A}$ of $X$ is called an \emph{orthonormal basis} if it satisfies the following properties:
+  \begin{enumerate}
+  \item (normality) for all $\alpha$, $\|e_\alpha\|=1$;
+  \item (orthogonality) for all $\alpha\neq\beta$, $\langle e_\alpha,e_\beta\rangle=0$; and
+  \item (maximality) for any $x\in X$, if $\langle x,e_\alpha\rangle=0$ for all $\alpha\in A$, then $x=0$.
+  \end{enumerate}
+\end{defn}
+
+It is important to note that for an infinite-dimensional Hilbert space, the concept of orthonormal basis is very different than the concept of ``basis'' in a classical vector space. It is true that the Hilbert space orthonormal basis is an independent set. However, it is not true that the Hilbert space orthonormal basis is a maximal independent set. The maximality property above states only that it is maximal with respect to being orthonormal.
+
+Just as every vector space has a basis, every Hilbert space has an orthonormal basis. Indeed, this follows from an elementary application of Zorn's lemma. However, for our concrete examples of Hilbert spaces, it is not difficult to identify a simple concrete basis.
+
+For example, regard $X=\ell^2$ as the space of complex vectors with countably many coordinates such that the coordinates are square-summable. We let $e_i$ be the vector with a $1$ in the $i$th coordinate and a $0$ in every other coordinate. Then it is easy to see that $\{e_i\}$ is an orthonormal basis for $\ell^2$.
+
+For another example, let $X=L^2[0,1]$. Let $e_n=e^{2\pi i nx}$, where $n$ ranges over the integers $\ZZ$. Then an easy calculation shows that $e_n$ have unit norm and are pairwise orthogonal. Maximality is somewhat harder to check; it follows from the Stone--Weierstra\ss\ theorem, which we omit but easily implies that the $e_n$ are dense in $L^2$.
+
+Note that in the case of real $L^2$ space, one instead uses the basis consisting of functions $\sin(2\pi nx)$ and $\cos(2\pi nx)$ for $n\in\NN$. This is the foundation of Fourier analysis. As we will see in the next result, the fact that this is a Hilbert space basis means that any $L^2$ function can be expressed uniquely as a countable linear combination of waves of different periods!
+
+Recall that in the study of classical vector spaces, every element can be written uniqely as a finite linear combination of basis elements. The following result shows that a Hilbert space basis has an analogous property: every element can be written uniqely as an \emph{infinite} linear combination of Hilbert space basis elements.
+
+\begin{thm}
+  Let $X$ be a Hilbert space and $\{e_\alpha\}_{\alpha\in A}$ an orthonormal basis for $X$. Then for any $x\in X$, we have $x=\sum\langle x,e_\alpha\rangle e_\alpha$, with the convergence being in norm. Moreover, we have Parseval's identity, which states that $\|x\|^2=\sum_{\alpha\in A}|\langle x,e_\alpha\rangle|^2$.
+\end{thm}
+
+\begin{proof}
+  In the proof, we will need the \emph{Pythagorean theorem}, which states that if $e_1,\ldots,e_n$ are orthognal, then $\|e_1+\cdots+e_n\|^2=\|e_1\|^2+\cdots+\|e_n\|^2$. The calculation is the same as the classical version, and is obtained by distributing out the expression $\langle e_1+\cdots+e_n,e_1+\cdots+e_n\rangle$.
+
+  We first show one half of Parseval's identity, namely that if  $\sum|\langle x,e_\alpha\rangle|^2\leq\|x\|^2$. (This is called Bessel's inequality.) For this we let $A_0\subset A$ be a finite subset. Then an elementary calculation together with the Pythagorean theorem gives
+  \begin{equation}
+    \label{eq:bessel}
+    \left\|\,x-\sum_{\alpha\in A_0}\langle x,e_\alpha\rangle e_\alpha\,\right\|^2
+    =\|x\|-\sum_{\alpha\in A_0}|\langle x,e_\alpha\rangle|^2
+  \end{equation}
+  Since the left-hand side is nonnegative, this completes the claim.
+
+  Now we know that $\sum|\langle x,e_\alpha\rangle|^2$ converges. It follows that there are just countably many nonzero terms, let us enumerate them $|\langle x,e_n\rangle|^2$. Then the sequence of partial sums of $\sum|\langle x,e_n\rangle|^2$ is Cauchy. By the Pythagorean theorem,
+  \[\left\|\,\sum_m^l\langle x,e_n\rangle e_n\,\right\|^2
+    =\sum_m^l|\langle x,e_n\rangle|^2
+  \]
+  Thus the sequence of partial sums of $\sum\langle x,e_n\rangle e_n$ is Cauchy too. Since $X$ is complete, we conclude that there exists an element $y\in X$ defined by $y=\sum\langle x,e_\alpha\rangle e_\alpha$.
+
+  Next we claim that in fact $x=y$. Indeed, it is easy to see that $\langle x-y,e_\alpha\rangle=0$ for all $\alpha$, so completeness implies that $x-y=0$.
+
+  Finally, we conclude the proof of Parseval's identity by returning to Equation~\eqref{eq:bessel}. Since we now know that the left-hand side converges to $0$ as $A_0\to A$, it follows that the right-hand side does as well.
+\end{proof}
+
+One can interpret this result as saying that any Hilbert space $X$ looks remarkably like $\ell^2$. That is, each element $x\in X$ is determined by its vector of coefficients $\langle x,e_\alpha\rangle$. Indeed, our last result will show that this is a formal theorem. In order to state it, we need to define a generalization of the sequence space $\ell^2$.
+
+\begin{defn}
+  For any index set $A$, we let
+  \[\ell^2(A)=\set{f\colon A\to\CC\;\left|\;\sum_{\alpha\in A}|f(\alpha)|^2<\infty\right.}
+  \]
+\end{defn}
+
+In other words, $\ell^2(A)$ is like a sequence space where the sequences may be indexed by an arbitrary set other than $\NN$. Another way to say it is that $\ell^2(A)$ is equal to $L^2(\mu)$, where $\mu$ is the counting measure on $A$.
+
+The space $\ell^2(A)$ is determined up to isomorphism by the cardinality of $A$. The cardinality of $A$ is called the \emph{dimension} of $\ell^2(A)$. This is because like $\ell^2$, the space $\ell^2(A)$ has the obvious basis consisting of $\{e_\alpha\}_{\alpha\in A}$, where $e_\alpha(\alpha)=1$ and $e_\alpha(\beta)=0$ whenever $\beta\neq\alpha$.
+
+\begin{thm}
+  Let $X$ be a Hilbert space. Then $X$ is isomorphic to $\ell^2(A)$ for some $A$ by a linear bijection that preserves inner products.
+\end{thm}
+
+\begin{proof}
+  Let $\{e_\alpha\}_{\alpha\in A}$ be an orthonormal basis for $X$. The index set $A$ will be the same set we use to form $\ell^2(A)$. We define a function $\phi\colon X\to\ell^2(A)$ by $\phi(x)(\alpha)=\langle x,e_\alpha\rangle$.
+
+  It is easy to see that $\phi$ is linear, and Parseval's identity implies that $\phi$ preserves the norm. In particular $\phi$ is injective. To see that $\phi$ preserves the inner product, it suffices to note that the inner product can be recovered from the norm by the \emph{polarization identity}
+  \[4\langle x,y\rangle=\|x+y\|^2+\|x-y\|^2+i\|x+iy\|^2-i\|x-iy\|^2
+  \]
+
+  Finally to see that $\phi$ is surjective, let $f\in\ell^2(A)$ be given. Since $\sum_{\alpha\in A}|f(\alpha)|^2<\infty$, the series has just countably many nonzero terms and its partial sums are Cauchy. By the Pythagorean theorem, the partial sums of $\sum_{\alpha\in A}f(\alpha)e_\alpha$ are Cauchy too. It follows that there exists an element $x\in X$ defined by $x=\sum_{\alpha\in A}f(\alpha)e_\alpha$. Clearly $\phi(x)=f$, as desired.
+\end{proof}
+
+Thus the result implies that there is exactly one Hilbert space in each dimension. Note that both $\ell^2$ and $L^2[0,1]$ are Hilbert spaces of countable dimension, because we have seen above that each has a countable basis. The unique countable dimensional Hilbert space, often denoted $\mathcal H$, is by far the most widely used in applications where an operator acts on infinitely many coordinates. Hilbert space appears in the study of differential equations, fourier analysis, quantum physics, and more.
+
+\end{document}
+
