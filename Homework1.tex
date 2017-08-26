@@ -1,4 +1,5 @@
 \documentclass{article}
+\renewcommand{\labelenumi}{(\alph{enumi})}
 \usepackage[utf8]{inputenc}
 \author{Greg Trent}
 \title{Homework 1}
@@ -6,37 +7,38 @@
 \begin{document}
 \maketitle
 (Due 09/01/2017)
-\section{Tao ex. 1.1.1 (Boolean Closure)}
-Show that if $E, F \in R^d$ are elementary sets, then the union of $E \cup F$, the intersection $E \cap F$, and the set theoretic difference $E \setminus F := \{ x \in E : x \notin F\}$, and the symmetric difference $E \triangle F := (E \setminus F) \cup (F \setminus E)$ are also elementary. 
 
-If $x \in R^d$ show that the translate $E+x := \{y+x : y \in E\}$ is also an elementary set.
+Properties:
+\begin{enumerate}
+\item (normality) $m(I)=$ the length of $I$ for every interval $I$;
+\item (translation-invariance) $m(x+A)=m(A)$ for every $A$; and
+\item (countable additivity) $m(\bigcup A_n)=\sum m(A_n)$ for every sequence of pairwise disjoint sets $A_n$.
+\end{enumerate}
 
-\begin{itemize}
-\item $E \cup F$
+\section{Ex 1.1}
+  Show that the properties (a)--(c) imply finite additivity: If $A$ and $B$ are disjoint then $m(A\cup B)=m(A)+m(B)$.
 
+\subsection{Proof:}
+By property c, countable additivity, we know that $m(\bigcup A_n)=\sum m(A_n)$ for every sequence of disjoint sets. "Every" is defined as "countable or finite" in this situation, which includes finite sequences, which implies finite additivity. QED. 
 
+\section{Ex 1.2}
+  Show that the properties (a)--(c) imply the inclusion--exclusion principle: For any sets $A,B$ we have $m(A\cup B)+m(A\cap B)=m(A)+m(B)$.
 
-\item $E \cap F$ 
+\subsection{Proof:}
+If $A$ and $B$ are disjoint, then we know that $m(A \cup B) = m(A) + m(B)$, per countable additivity. This also means that $A \cap B$ is empty, so $m(A \cap B) = 0$. Then $m(A \cup B) + m(A \cap B) = m(A \cup B) + 0 = m(A) + m(B)$. So this checks out, by property c.  
 
+If $A$ and $B$ are not disjoint, then there's overlap - some set $C$
+\section{Ex 1.3}
+  Complete the details of the proof that if there is a measure on $R$ satisfying properties (a)--(c), then there is a measure on $[0,1)$ (with addition modulo $1$) satisfying properties (a)--(c).
 
-\item $E \setminus F$
-
-
-\item $E \triangle F$
-
-
-
-\item The translate $E+x$
-
+\section{Ex 2.1 (Tao 1.1.1)}
+ Show that the class of elementary sets is closed under the operations: union, intersection, set difference, symmetric difference, and translation.
+ 
+ \section{Ex 2.2}
+Prove: The elementary measure function $m$ satisfies
+  \begin{itemize}
+  \item (monotonicity) $m(E)\leq m(F)$ for elementary sets $E\subset F$; and
+  \item (finite subadditivity) $m(E\cup F)\leq m(E)+m(F)$ for elementary $E,F$.
 \end{itemize}
-
-\section{Tao ex. 1.1.2}
-Give an alternate proof of Lemma 1.1.2(ii) by showing that any two partitions of $E$ into boxes admit a mutual refinement into boxes that arise from taking Cartesian products of elements from finite collections of disjoint intervals. 
-
-\subsection{Lemma 1.1.2(ii)}
-Let $E, F \in R^d$ be an elementary set. If $E$ is partitioned as a finite union $B_1 \cup ... \cup B_k$ of disjoint boxes, then the quantity $M(E) := |B_1| + ... + |B_k|$ is independent of the partition. 
-
-
-\section{Tao ex. 1.1.3}
 
 \end{document}
