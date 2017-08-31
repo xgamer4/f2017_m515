@@ -12,14 +12,16 @@ Properties:
 \begin{enumerate}
 \item (normality) $m(I)=$ the length of $I$ for every interval $I$;
 \item (translation-invariance) $m(x+A)=m(A)$ for every $A$; and
-\item (countable additivity) $m(\bigcup A_n)=\sum m(A_n)$ for every sequence of pairwise disjoint sets $A_n$.
+\item (countable additivity) $m(\bigcup_{n=1}^{\infty} A_n)=\sum m(A_n)$ for every sequence of pairwise disjoint sets $A_n$.
 \end{enumerate}
 
 \section{Ex 1.1}
   Show that the properties (a)--(c) imply finite additivity: If $A$ and $B$ are disjoint then $m(A\cup B)=m(A)+m(B)$.
 
 \subsection{Proof:}
-By property c, countable additivity, we know that $m(\bigcup A_n)=\sum m(A_n)$ for every sequence of disjoint sets. "Every" is defined as "countable or finite" in this situation, which includes finite sequences, which implies finite additivity. QED. 
+By property c, countable additivity, we know that $m(\bigcup_{n=1}^{\infty} C_n)=\sum m(C_n)$ for every infinite sequence of disjoint sets. We extend this to a finite sequence, $D$, with cardinality $m \in N$, by creating the infinite sequence $F$, such that $F_n = D_n$, for $n \leq m$, and $F_n = \emptyset$ for $n > m$.
+
+By property a, we know that $m(\emptyset) = 0$, so adding the empty set to the finite sequence doesn't change the measure - it just allows us to use property c. ($m(F) = m(F_1) + ... + m(F_m) + 0 = m(F_1) + ... + m(F_m) = m(D)$. So properties a-c imply finite additivity. QED
 
 \section{Ex 1.2}
   Show that the properties (a)--(c) imply the inclusion--exclusion principle: For any sets $A,B$ we have $m(A\cup B)+m(A\cap B)=m(A)+m(B)$.
@@ -27,18 +29,88 @@ By property c, countable additivity, we know that $m(\bigcup A_n)=\sum m(A_n)$ f
 \subsection{Proof:}
 If $A$ and $B$ are disjoint, then we know that $m(A \cup B) = m(A) + m(B)$, per countable additivity. This also means that $A \cap B$ is empty, so $m(A \cap B) = 0$. Then $m(A \cup B) + m(A \cap B) = m(A \cup B) + 0 = m(A) + m(B)$. So this checks out, by property c.  
 
-If $A$ and $B$ are not disjoint, then there's overlap - some set $C$
+If $A$ and $B$ are not disjoint, then there's overlap - some set $C = A \cap B$, which means that $C \subset A$ and $C \subset B$. So $m(A) = m(A \setminus C) + m(C)$ by property c (we decomposed $A$ into pairwise disjoint sets $A \setminus C$ and $C$). Similarly, $m(B) = m(B \setminus C) + m(C)$. 
+
+We can use the same process to decompose $A \cup B$ into sets $A\setminus C, B\setminus C, and C$, which means that $m(A \cup B) = m(A \setminus C) + m(B \setminus C) + m(C)$.
+
+We want to show that $m(A \cup B) + m(A \cap B) = m(A) + m(B)$. Using the above two paragraphs, we rewrite this as $(m(A \setminus C) + m(B \setminus C) + m(C)) + m(C) = (m(A \setminus C) + m(C)) + (m(B \setminus C) + m(C))$. Addition is commutative, so we don't need to worry about the order the sums appear in, so these are equal. QED. 
+
 \section{Ex 1.3}
   Complete the details of the proof that if there is a measure on $R$ satisfying properties (a)--(c), then there is a measure on $[0,1)$ (with addition modulo $1$) satisfying properties (a)--(c).
+  
+\subsection{Proof}
+
+Let $m$ be the measure function on $R$ satisfying properties (a)--(c), and let $m_1$ be the measure function on $[0,1)$ (with addition mod $1$). 
+
+Normality: For an interval, $a$, in $[0,1]$, we define $m_1(a) = m(a)$. So we have normality. 
+
+Countable Additivity: Let $A$ be an infinite sequence of sets in $[0,1)$. We know that $m(\bigcup_{n=1}^{\infty} A_n)=\sum m(A_n)$, and we know that $m_1(A_n) = m(A_n)$ for sets in $[0,1)$ - so we know that $m(\bigcup_{n=1}^{\infty} A_n)=\sum m_1(A_n)$. And we have countable additivity (and by Ex 1.1, we have finite additivity). 
+
+Translation Invariance: Let $r \in R$, and let $A$ be an interval in $[0,1)$ with endpoints $a_0, a_1, a_0 \leq a_1$. We consider the translated interval $[a_0 + r, a_1 + r)$. If $a_0 + r \leq a_1 + r$, then we just inherit translation invariance from $m$. If $m_1 + r < m_0 + r$, then we've wrapped around $[0,1)$. We'll then consider the intervals $[m_0 + r, 1)$ and $[0, m_1 + r]$
+
+We proceed to calculate the measure of these intervals using normality:
+
+$(1 - (m_0 + r)) + ((m_1 + r) - 0) = 1 - m_0 - r + m_1 + r - 0 = 1 - m_0 + m_1 = 1 + (-m_0) + m_1 = 1 + m_1 - m_0$. As we're working with addition mod $1$, adding that $1$ does nothing, and this equals $m_1 - m_0$, as we wished to show. So translation invariance holds. QED
 
 \section{Ex 2.1 (Tao 1.1.1)}
  Show that the class of elementary sets is closed under the operations: union, intersection, set difference, symmetric difference, and translation.
- 
+
+Let $A, B$ be elementary sets, and let $A_1 ... A_n$ and $B_1 ... B_m$ be the finite boxes that are unioned together to create $A$ and $B$, respectively, for the following proofs:
+
+\subsection{Proof}
+\begin{enumerate}
+\item Union
+
+An elementary set is defined as a finite union of boxes. As such, both $A$ and $B$ are comprised of finite unions of boxes. So $A \cup B = (A_1 \cup ... \cup A_n) \cup (B_1 \cup ... \cup B_m)$. Which is a finite union of boxes, and therefore an elementary set. QED
+
+\item Intersection
+
+The definition of a box starts with an interval, and works upwards in dimensions by considering the cartesian product of intervals with an interval. So it suffices to show that the intersection of an interval with an interval is an interval. Let $C, D$ be intervals with endpoints $C_0, C_1$ and  $D_0, D_1$ respectively, such that $C_0 \leq C_1$ and $D_0 \leq D_1$. 
+
+If these intervals are disjoint, then the intersection is the emptyset - which is an interval. 
+
+If the intervals are not disjoint, then they form the interval bounded by $\max(C_0, D_0), \min(C_1, D_1)$. QED
+
+\item Set Difference
+
+We will prove this one on intervals as well. Let $C, D$ be intervals with endpoints $C_0, C_1$ and  $D_0, D_1$ respectively, such that $C_0 \leq C_1$ and $D_0 \leq D_1$. We wish to show the $E = C\setminus D = \{c \in C : c \notin D\}$ is also an interval. 
+
+If $C \cap D$ is empty, then $C\setminus D = C$, which is an interval. 
+
+If $C \cap D$ is nonempty, then we have one of these scenarios:
+
+\begin{enumerate}
+\item $D_0 \leq C_0$ and $D_1 \geq C_1$. In this case, $C \setminus D$ is empty, which is an interval. 
+
+\item $C_0 < D_0$ and $C_1 \leq D_1$. This forms the interval with endpoints $C_0, D_0$. 
+
+\item $D_0 \leq C_0$ and $D_1 < C_1$. This forms the interval with endpoints $D_1, C_1$
+
+\item $C_0 < D_0$ and $D_1 < C_1$. This forms the pair of intervals with endpoints $C_0, D_0$ and $D_1, C_1$.
+
+So the the set difference of two elementary sets is elementary. QED
+\end{enumerate}
+
+\item Symmetric Difference
+
+We wish to show that $A \triangle B = (E \setminus F) \cup (F \setminus E)$ is an elementary set. 
+
+We know from above that the set difference of two elementary sets is elementary, and that the union of elementary sets is elementary. So this is elementary as well. QED
+
+\end{enumerate}
+
  \section{Ex 2.2}
 Prove: The elementary measure function $m$ satisfies
   \begin{itemize}
   \item (monotonicity) $m(E)\leq m(F)$ for elementary sets $E\subset F$; and
   \item (finite subadditivity) $m(E\cup F)\leq m(E)+m(F)$ for elementary $E,F$.
 \end{itemize}
+
+\subsection{Proof}
+
+Monotonicity: Let $E, F$ be elementary sets such that $E \subset F$. We wish to show that $m(E) \leq m(F)$. We'll start by splitting $F$ into two disjoint subsets - $E$ and $F \setminus E$. By finite additivity we know that $m(F) = m(E) + m(F \setminus E)$. So $m(E) = m(F) - m(F \setminus E)$. As measure must always be greater than or equal 0, and we're removing that value from $m(F)$, we have shown that $m(E) \leq m(F)$. 
+
+
+Finite Subadditivity: Let $A, B$ be elementary sets. We want to show that $m(A\cup B)\leq m(A)+m(B)$. Following the logic established in Ex 2.1, we let $C = A \cap B$, and we want to show that $(m(A \setminus C) + m(B \setminus C) + m(C)) \leq (m(A \setminus C) + m(C)) + (m(B \setminus C) + m(C))$. After some simplication, this means we want to show that $(m(A \setminus C) + m(B \setminus C)) \leq (m(A \setminus C) + m(B \setminus C) + m(C))$. As $m(C) \geq 0$, this shows that $m(A\cup B)\leq m(A)+m(B)$. QED. 
 
 \end{document}
